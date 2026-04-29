@@ -1,0 +1,93 @@
+﻿@page "/pagos"
+@rendermode InteractiveAuto
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+@inject IHttpServicio http
+@inject NavigationManager navHttp
+
+<h3>Listado de Pagos</h3>
+
+<a class="btn btn-primary mb-3" href="/pagos/crear">Registrar nuevo pago</a>
+
+@if (pagos == null)
+{
+    <p>Cargando pagos...</p>
+}
+else if (pagos.Count == 0)
+{
+    <p>No hay pagos registrados.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Evento</th>
+                <th>Estado</th>
+                <th>Método</th>
+                <th>Monto</th>
+                <th>Fecha de Pago</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in pagos)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@GetEventoNombre(p.EventoId)</td>
+                    <td>@p.EstadoPago</td>
+                    <td>@p.Metodo</td>
+                    <td>@p.Monto.ToString("C")</td>
+                    <td>@p.FechaPago.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<p class="text-danger mt-2">@Mensaje</p>
+
+@code {
+    List<PagoListadoDTO>? pagos;
+    List<ListadoEventoDTO> eventos = new();
+    string Mensaje = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarEventos();
+        await CargarPagos();
+    }
+
+    private async Task LeerPagos()
+    {
+        var resp = await http.Get<List<PagoListadoDTO>>("api/Pagos/ListadoPagos");
+        if (!resp.Error)
+        {
+            pagos = resp.Respuesta;
+        }
+        else
+        {
+            Mensaje = resp.ObtenerError();
+        }
+    }
+
+    private async Task CargarPagos()
+    {
+        var r = await http.Get<List<PagoListadoDTO>>("api/Pagos/ListadoPagos");
+        if (!r.Error) pagos = r.Respuesta;
+        else Mensaje = r.ObtenerError();
+    }
+
+    private string GetEventoNombre(int eventoId)
+    {
+        var ev = eventos.FirstOrDefault(x => x.Id == eventoId);
+        return ev != null ? ev.Evento : eventoId.ToString();
+    }
+
+    private async Task CargarEventos()
+    {
+        var r = await http.Get<List<ListadoEventoDTO>>("api/Evento/ListadoEvento");
+        if (!r.Error) eventos = r.Respuesta ?? new();
+    }
+}

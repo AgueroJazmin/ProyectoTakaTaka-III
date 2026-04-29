@@ -1,0 +1,33 @@
+﻿@page "/evento/calendario"
+@rendermode InteractiveAuto
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@inject IHttpServicio http
+
+<input type="date"
+       class="form-control"
+       min="@minFecha"
+       max="@maxFecha"
+       @onchange="SeleccionarFecha" />
+
+@code {
+    [Parameter] public EventCallback<DateOnly> OnFechaSeleccionada { get; set; }
+
+    private string minFecha = "";
+    private string maxFecha = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Seteá rango válido (por ejemplo, meses habilitados)
+        await Task.CompletedTask;
+        minFecha = DateTime.Today.ToString("yyyy-MM-dd");
+        maxFecha = new DateTime(DateTime.Today.Year, 12, 31).ToString("yyyy-MM-dd");
+    }
+
+    private async Task SeleccionarFecha(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out DateTime fecha))
+        {
+            await OnFechaSeleccionada.InvokeAsync(DateOnly.FromDateTime(fecha));
+        }
+    }
+}

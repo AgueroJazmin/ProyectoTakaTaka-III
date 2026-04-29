@@ -1,0 +1,285 @@
+﻿@page "/eventos/crear"
+@rendermode InteractiveAuto
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+@inject IHttpServicio http 
+@inject NavigationManager navHttp
+
+<h3>Crear Evento</h3>
+
+<div class="mb-2">
+    <label>Fecha</label>
+    <CalendarioEvento OnFechaSeleccionada="OnFechaSeleccionada" />
+    @if (evento.Fecha != default)
+    {
+        <p class="mt-2"><b>Fecha seleccionada:</b> @evento.Fecha.ToString("dd/MM/yyyy")</p>
+    }
+</div>
+
+<EditForm Model="@evento" OnValidSubmit="GuardarEvento">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <fieldset class="border p-3">
+        <legend>Datos del Cliente</legend>
+        <InputText class="form-control mb-2" @bind-Value="evento.ClienteNombre" placeholder="Nombre" />
+        <InputText class="form-control mb-2" @bind-Value="evento.ClienteApellido" placeholder="Apellido" />
+        <InputText class="form-control mb-2" @bind-Value="evento.ClienteTelefono" placeholder="Teléfono" />
+    </fieldset>
+
+    <fieldset class="border p-3 mt-3">
+        <legend>Datos del Cumpleañero</legend>
+        <InputText class="form-control mb-2" @bind-Value="evento.CumpleaneroNombre" placeholder="Nombre del cumpleañero" />
+        <InputNumber class="form-control mb-2" @bind-Value="evento.CumpleaneroEdad" placeholder="Edad" />
+    </fieldset>
+
+    <fieldset class="border p-3 mt-3">
+        <legend>Detalles del Evento</legend>
+
+        
+
+        <div class="mb-2">
+            <InputText class="form-control" @bind-Value="evento.Tematica" placeholder="Temática" />
+        </div>
+
+        <div class="mb-2">
+            <label>Combo</label>
+            <select class="form-select" value="@evento.ComboId" @onchange="OnComboSeleccionado">
+                <option value="0">-- Seleccione combo --</option>
+                @foreach (var c in combos)
+                {
+                    <option value="@c.Id">@c.NomCombo</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Horario</label>
+            <select class="form-select" @bind-Value="evento.HorarioId" @bind-Value:event="onchange">
+                <option value="0">-- Seleccione horario --</option>
+                @foreach (var h in horarios)
+                {
+                    <option value="@h.HorarioId">@($"{h.HInicio} - {h.HFin}")</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Opcionales</label>
+            @foreach (var o in opcionales)
+            {
+                <div>
+                    <input type="checkbox" @onchange="(e) => ToggleOpcional(o.Id, e)" checked="@evento.OpcionalesId.Contains(o.Id)" />
+                    <label>@o.NomOpcional</label>
+                </div>
+            }
+        </div>
+    </fieldset>
+
+    <div class="mt-3">
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <button class="btn btn-secondary" type="button" @onclick="Cancelar">Cancelar</button>
+    </div>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="mt-2 text-danger">@mensaje</div>
+}
+
+@code {
+    private EventoCrearCompletoDTO evento = new();
+    private List<ListadoComboDTO> combos = new();
+    private List<HorarioListadoDTO> horarios = new();
+    private List<ListadoOpcionalDTO> opcionales = new();
+    private List<ListadoComboDTO> combosOriginales = new();
+    private string mensaje = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarCombos();
+        await CargarOpcionales();
+    }
+
+    private async Task CargarCombos()
+    {
+        var r = await http.Get<List<ListadoComboDTO>>("api/Combos/ListadoCombos");
+        if (!r.Error && r.Respuesta != null)
+        {
+            combos = r.Respuesta;
+            combosOriginales = new List<ListadoComboDTO>(combos);
+            Console.WriteLine($"Combos cargados: {combos.Count}");
+        }
+        else
+        {
+            mensaje = "Error cargando combos.";
+            Console.WriteLine($"Error combos: {r.ObtenerError()}");
+        }
+    }
+
+    private async Task CargarOpcionales()
+    {
+        var r = await http.Get<List<ListadoOpcionalDTO>>("api/Opcionales/ListadoOpcional");
+        if (!r.Error) opcionales = r.Respuesta ?? new();
+        else mensaje += "Error cargando opcionales.";
+    }
+
+    private void ToggleOpcional(int id, ChangeEventArgs e)
+    {
+        bool sel = e.Value is bool b && b;
+        var opcional = opcionales.FirstOrDefault(o => o.Id == id);
+
+        if (opcional != null && opcional.NomOpcional == "30 Minutos Adicionales")
+        {
+            var horarioSeleccionado = horarios.FirstOrDefault(h => h.HorarioId == evento.HorarioId);
+            if (horarioSeleccionado != null)
+            {
+                var horaInicio = horarioSeleccionado.HInicio;
+                var horaFin = horarioSeleccionado.HFin;
+
+                // Solo permitido en los dos últimos horarios
+                bool permitido =
+                    (horaInicio == new TimeOnly(16, 0) && horaFin == new TimeOnly(18, 30)) ||
+                    (horaInicio == new TimeOnly(19, 0) && horaFin == new TimeOnly(21, 30));
+
+                if (!permitido)
+                {
+                    mensaje = "El opcional '30 Minutos Adicionales' solo se puede aplicar en los últimos dos horarios.";
+                    return;
+                }
+            }
+        }
+
+        // comportamiento normal
+        if (sel && !evento.OpcionalesId.Contains(id))
+            evento.OpcionalesId.Add(id);
+        if (!sel && evento.OpcionalesId.Contains(id))
+            evento.OpcionalesId.Remove(id);
+    }
+
+    private async Task GuardarEvento()
+    {
+        mensaje = "";
+        if (string.IsNullOrWhiteSpace(evento.ClienteNombre) || string.IsNullOrWhiteSpace(evento.CumpleaneroNombre))
+        {
+            mensaje = "Complete los datos del cliente y del cumpleañero.";
+            return;
+        }
+
+        if (evento.HorarioId == 0)
+        {
+            mensaje = "Debe seleccionar un horario antes de guardar.";
+            return;
+        }
+
+        try
+        {
+            var dtoParaEnviar = new EventoCrearCompletoDTO
+            {
+                ClienteNombre = evento.ClienteNombre,
+                ClienteApellido = evento.ClienteApellido,
+                ClienteTelefono = evento.ClienteTelefono,
+                CumpleaneroNombre = evento.CumpleaneroNombre,
+                CumpleaneroEdad = evento.CumpleaneroEdad,
+                Fecha = evento.Fecha,               
+                ComboId = evento.ComboId,
+                HorarioId = evento.HorarioId,
+                Tematica = evento.Tematica,
+                OpcionalesId = evento.OpcionalesId
+            };
+
+            var resp = await http.Post<EventoCrearCompletoDTO, int>("api/Evento/CrearCompleto", dtoParaEnviar);
+
+            if (resp.Error)
+            {
+                var detalle = await resp.HttpResponseMessage.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error del servidor: {detalle}");
+                mensaje = $"Error del servidor: {detalle}";
+                return;
+            }
+
+            if (resp.Respuesta > 0)
+            {
+                mensaje = "Evento creado correctamente.";
+                navHttp.NavigateTo("/eventos");
+            }
+            else
+            {
+                mensaje = "No se pudo crear el evento (respuesta vacía).";
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error inesperado: {ex.Message}";
+        }
+    }
+
+    private async Task OnFechaSeleccionada(DateOnly fecha)
+    {
+        evento.Fecha = fecha;
+        mensaje = "";
+
+        //Filtrar combos según el día seleccionado
+        DayOfWeek dia = fecha.DayOfWeek;
+        if (dia >= DayOfWeek.Monday && dia <= DayOfWeek.Thursday)
+        {
+            combos = combosOriginales.Where(c => c.NomCombo.Contains("Lunes a Jueves")).ToList();
+        }
+        else if (dia == DayOfWeek.Friday)
+        {
+            combos = combosOriginales.Where(c => c.NomCombo.Contains("Viernes")).ToList();
+        }
+        else //sábado o domingo
+        {
+            combos = combosOriginales.Where(c => c.NomCombo.Contains("Findes") || c.NomCombo.Contains("Feriados")).ToList();
+        }
+
+        try
+        {
+            var formato = fecha.ToString("yyyy-MM-dd");
+            var url = $"api/Evento/PorFecha?fecha={Uri.EscapeDataString(formato)}";
+            Console.WriteLine($"🔹 Llamando a: {url}");
+
+            // Obtener y mostrar el JSON real que viene del backend
+            var response = await http.Get<List<object>>(url);
+            Console.WriteLine($"JSON recibido: {System.Text.Json.JsonSerializer.Serialize(response.Respuesta)}");
+
+            // Ahora pedimos los datos reales
+            var r = await http.Get<List<HorarioListadoDTO>>(url);
+
+            if (r.Error)
+            {
+                mensaje = $"Error al obtener horarios: {r.ObtenerError()}";
+                Console.WriteLine($"Error HTTP: {r.HttpResponseMessage.StatusCode}");
+            }
+            else if (r.Respuesta == null)
+            {
+                mensaje = "Respuesta vacía del servidor.";
+            }
+            else
+            {
+                horarios = r.Respuesta;
+                Console.WriteLine($"Horarios cargados: {horarios.Count}");
+            }
+        }
+        catch (Exception ex)
+        {
+            mensaje = $"Error en OnFechaSeleccionada: {ex.Message}";
+            Console.WriteLine($"EXCEPCIÓN: {ex}");
+        }
+
+        StateHasChanged();
+    }
+
+    private void OnComboSeleccionado(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int id))
+        {
+            evento.ComboId = id;
+            Console.WriteLine($"Combo seleccionado: {id}");
+        }
+    }
+
+    private void Cancelar() => navHttp.NavigateTo("/eventos");
+
+}

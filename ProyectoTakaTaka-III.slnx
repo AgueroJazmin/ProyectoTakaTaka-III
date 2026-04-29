@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="ProyectoTakaTaka-III.BD/ProyectoTakaTaka-III.BD.csproj" />
+  <Project Path="ProyectoTakaTaka-III.Repositorio/ProyectoTakaTaka-III.Repositorio.csproj" />
+  <Project Path="ProyectoTakaTaka-III.Server/ProyectoTakaTaka-III.Server.Client/ProyectoTakaTaka-III.Server.Client.csproj" />
+  <Project Path="ProyectoTakaTaka-III.Server/ProyectoTakaTaka-III.Server/ProyectoTakaTaka-III.Server.csproj" />
+  <Project Path="ProyectoTakaTaka-III.Servicio/ProyectoTakaTaka-III.Servicio.csproj" />
+  <Project Path="ProyectoTakaTaka-III.Shared/ProyectoTakaTaka-III.Shared.csproj" />
+</Solution>
