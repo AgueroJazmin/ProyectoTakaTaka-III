@@ -64,6 +64,10 @@ namespace ProyectoTakaTaka_III.Servicio.ServicioHttp
         private async Task<T?> DesSerializar<T>(HttpResponseMessage response)
         {
             var respStr = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"JSON recibido: {respStr}");
+            if (string.IsNullOrWhiteSpace(respStr))
+                return default;
+
             var options = new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true,

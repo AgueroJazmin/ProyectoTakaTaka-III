@@ -28,7 +28,10 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult<ListadoComboDTO>> Get(int id)
         {
             var combo = await repositorio.SelectComboById(id);
-            if (combo == null) return NotFound();
+
+            if (combo == null)
+                return NotFound(new { mensaje = $"No se encontró el combo {id}" });
+
             return Ok(combo);
         }
 
@@ -36,21 +39,33 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult> Post(CrearComboDTO dto)
         {
             await repositorio.InsertCombo(dto);
-            return Ok("Combo creado correctamente");
+
+            return Ok(new
+            {
+                mensaje = "Combo creado correctamente"
+            });
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, CrearComboDTO dto)
         {
             await repositorio.UpdateCombo(id, dto);
-            return Ok("Combo actualizado correctamente");
+
+            return Ok(new
+            {
+                mensaje = "Combo actualizado correctamente"
+            });
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             await repositorio.DeleteCombo(id);
-            return Ok("Combo eliminado correctamente");
+
+            return Ok(new
+            {
+                mensaje = "Combo eliminado correctamente"
+            });
         }
     }
 }

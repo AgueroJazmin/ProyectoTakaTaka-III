@@ -21,7 +21,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult<List<PagoListadoDTO>>> Get()
         {
             var lista = await repositorio.SelectListadoPagos();
-            return Ok(lista);
+            return Ok(lista ?? new List<PagoListadoDTO>());//Ok(lista);
         }
 
         [HttpPost("CrearPago")]
@@ -35,14 +35,14 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult> Put(int id, CrearPagoDTO dto)
         {
             await repositorio.UpdatePago(id, dto);
-            return Ok("Pago actualizado correctamente.");
+            return Ok(new { mensaje = "Pago actualizado correctamente." });//Ok("Pago actualizado correctamente.");
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             await repositorio.DeletePago(id);
-            return Ok("Pago eliminado correctamente.");
+            return Ok(new { mensaje = "Pago eliminado correctamente." });//Ok("Pago eliminado correctamente.");
         }
     }
 }

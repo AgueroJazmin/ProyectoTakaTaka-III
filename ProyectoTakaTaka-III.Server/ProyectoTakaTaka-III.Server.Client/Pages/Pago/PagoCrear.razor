@@ -4,9 +4,10 @@
 @inject IHttpServicio http
 @inject NavigationManager navHttp
 
+
 <h3>Registrar Pago</h3>
 
-<EditForm Model="@pago" OnValidSubmit="RegistrarPago">
+<EditForm Model="@pago" OnValidSubmit="RegistrarPago" FormName="FormPago">
     <DataAnnotationsValidator />
     <ValidationSummary />
 

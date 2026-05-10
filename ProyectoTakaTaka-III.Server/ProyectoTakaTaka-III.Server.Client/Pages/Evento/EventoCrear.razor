@@ -16,7 +16,7 @@
     }
 </div>
 
-<EditForm Model="@evento" OnValidSubmit="GuardarEvento">
+<EditForm Model="@evento" OnValidSubmit="GuardarEvento" FormName="FormEvento">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -193,7 +193,7 @@
             if (resp.Error)
             {
                 var detalle = await resp.HttpResponseMessage.Content.ReadAsStringAsync();
-                Console.WriteLine($"Error del servidor: {detalle}");
+                Console.WriteLine($" {detalle}");
                 mensaje = $"Error del servidor: {detalle}";
                 return;
             }

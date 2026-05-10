@@ -1,6 +1,8 @@
 ﻿@page "/evento/calendario"
 @rendermode InteractiveAuto
 @using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+@using System.Globalization;
 @inject IHttpServicio http
 
 <input type="date"
@@ -9,25 +11,117 @@
        max="@maxFecha"
        @onchange="SeleccionarFecha" />
 
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="text-danger mt-2">
+        @mensaje
+    </div>
+}
+
 @code {
+
     [Parameter] public EventCallback<DateOnly> OnFechaSeleccionada { get; set; }
 
     private string minFecha = "";
     private string maxFecha = "";
+    private string mensaje = "";
+
+    private List<MesListadoDTO> mesesActivos = new();
 
     protected override async Task OnInitializedAsync()
     {
-        //Seteá rango válido (por ejemplo, meses habilitados)
-        await Task.CompletedTask;
-        minFecha = DateTime.Today.ToString("yyyy-MM-dd");
-        maxFecha = new DateTime(DateTime.Today.Year, 12, 31).ToString("yyyy-MM-dd");
+        await CargarMeses();
+
+        if (mesesActivos.Count > 0)
+        {
+            var cultura = new CultureInfo("es-ES");
+
+            // Ordenar meses por fecha
+            var mesesOrdenados = mesesActivos
+                .OrderBy(m =>
+                {
+                    int mes = DateTime.ParseExact(
+                        m.MesHabilitado,
+                        "MMMM",
+                        cultura).Month;
+
+                    return new DateTime(int.Parse(m.Año), mes, 1);
+                })
+                .ToList();
+
+            // Primer mes habilitado
+            var primerMes = mesesOrdenados.First();
+
+            int mesInicio = DateTime.ParseExact(
+                primerMes.MesHabilitado,
+                "MMMM",
+                cultura).Month;
+
+            int añoInicio = int.Parse(primerMes.Año);
+
+            // Último mes habilitado
+            var ultimoMes = mesesOrdenados.Last();
+
+            int mesFin = DateTime.ParseExact(
+                ultimoMes.MesHabilitado,
+                "MMMM",
+                cultura).Month;
+
+            int añoFin = int.Parse(ultimoMes.Año);
+
+            // Fecha mínima
+            minFecha = new DateTime(añoInicio, mesInicio, 1)
+                .ToString("yyyy-MM-dd");
+
+            // Último día del último mes
+            int ultimoDia = DateTime.DaysInMonth(añoFin, mesFin);
+
+            maxFecha = new DateTime(añoFin, mesFin, ultimoDia)
+                .ToString("yyyy-MM-dd");
+        }
+        else
+        {
+            minFecha = DateTime.Today.ToString("yyyy-MM-dd");
+            maxFecha = DateTime.Today.ToString("yyyy-MM-dd");
+        }
+    }
+
+    private async Task CargarMeses()
+    {
+        var r = await http.Get<List<MesListadoDTO>>("api/Mes/Activos");
+
+        if (!r.Error && r.Respuesta != null)
+        {
+            mesesActivos = r.Respuesta;
+        }
+        else
+        {
+            mensaje = "No se pudieron cargar los meses habilitados.";
+        }
     }
 
     private async Task SeleccionarFecha(ChangeEventArgs e)
     {
+        mensaje = "";
+
         if (DateTime.TryParse(e.Value?.ToString(), out DateTime fecha))
         {
-            await OnFechaSeleccionada.InvokeAsync(DateOnly.FromDateTime(fecha));
+            string nombreMes = fecha
+                .ToString("MMMM", new CultureInfo("es-ES"))
+                .ToLower();
+
+            bool habilitado = mesesActivos.Any(m =>
+                m.MesHabilitado.ToLower() == nombreMes &&
+                m.Año == fecha.Year.ToString());
+
+            if (!habilitado)
+            {
+                mensaje = $"El mes '{nombreMes}' del año {fecha.Year} no está habilitado.";
+                return;
+            }
+
+            await OnFechaSeleccionada.InvokeAsync(
+                DateOnly.FromDateTime(fecha));
         }
     }
 }

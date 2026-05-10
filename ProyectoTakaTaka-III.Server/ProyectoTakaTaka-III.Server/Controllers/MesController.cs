@@ -30,10 +30,10 @@ namespace ProyectoTakaTaka_III.Server.Controllers
           })
              .ToListAsync();
 
-            if (meses == null || meses.Count == 0)
-                return NotFound("Meses no disponibles.");
+            //if (meses == null || meses.Count == 0)
+             //   return Ok(new List<MesListadoDTO>()); //NotFound("Meses no disponibles.");
 
-            return Ok(meses);
+            return Ok(meses ?? new List<MesListadoDTO>());
         }
 
         [HttpGet("Activos")]
@@ -53,7 +53,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             if (meses == null || meses.Count == 0)
                 return Ok(new List<MesListadoDTO>());
 
-            return Ok(meses);
+            return Ok(meses ?? new List<MesListadoDTO>());
         }
 
         [HttpPost]
@@ -78,22 +78,23 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             var mes = await context.Meses.FirstOrDefaultAsync(x => x.Id == id);
             if (mes == null)
             {
-                return NotFound($"No se encontró el mes {id} o ya fue eliminado");
+                return NotFound(new { mensaje = $"No se encontró el mes {id}" });
+                //NotFound($"No se encontró el mes {id} o ya fue eliminado");
             }
             context.Meses.Remove(mes);
             await context.SaveChangesAsync();
-            return Ok($"El Mes {id} se eliminó correctamente");
+            return Ok(new { mensaje = $"El mes {id} se eliminó correctamente" });//Ok($"El Mes {id} se eliminó correctamente");
         }
 
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put(int id, MesCrearDTO DTO)
         {
             if (id != DTO.Id)
-                return BadRequest("Datos no válidos");
+                return BadRequest(new { mensaje = "Datos no válidos" });//BadRequest("Datos no válidos");
 
             var mes = await context.Meses.FirstOrDefaultAsync(x => x.Id == id);
             if (mes == null)
-                return NotFound($"No se encontró el Mes {id}");
+                return NotFound(new { mensaje = $"No se encontró el mes {id}" });//NotFound($"No se encontró el Mes {id}");
 
             mes.MesHabilitado = DTO.MesHabilitado;
             mes.Año = DTO.Año;
@@ -102,7 +103,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             context.Meses.Update(mes);
             await context.SaveChangesAsync();
 
-            return Ok($"El Mes {id} se actualizó correctamente");
+            return Ok(new { mensaje = $"El mes {id} se actualizó correctamente" });//Ok($"El Mes {id} se actualizó correctamente");
         }
 
         [HttpGet("{id:int}")]
@@ -111,7 +112,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             var meses = await context.Meses.FirstOrDefaultAsync(x => x.Id == id);
             if (meses == null)
             {
-                return NotFound("Mes no disponible.");
+                return NotFound(new { mensaje = "Mes no disponible." });//NotFound("Mes no disponible.");
             }
             return Ok(meses);
         }

@@ -21,8 +21,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult<List<HorarioListadoDTO>>> Get()
         {
             var lista = await repositorio.SelectListadoHorarios();
-            if (lista.Count == 0)
-                return NotFound("No hay horarios registrados.");
+
             return Ok(lista);
         }
 
@@ -30,8 +29,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult<List<HorarioListadoDTO>>> GetDisponibles()
         {
             var lista = await repositorio.SelectHorariosDisponibles();
-            if (lista.Count == 0)
-                return NotFound("No hay horarios disponibles.");
+
             return Ok(lista);
         }
 
@@ -41,11 +39,18 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             try
             {
                 var id = await repositorio.InsertHorario(dto);
-                return Ok($"Horario creado correctamente con ID {id}.");
+
+                return Ok(new
+                {
+                    mensaje = $"Horario creado correctamente con ID {id}"
+                });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new { mensaje = ex.Message });
+                return Conflict(new
+                {
+                    mensaje = ex.Message
+                });
             }
         }
 
@@ -55,14 +60,26 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             try
             {
                 bool actualizado = await repositorio.UpdateHorario(id, dto);
-                if (!actualizado)
-                    return NotFound($"No se encontró el horario con ID {id}");
 
-                return Ok($"Horario {id} actualizado correctamente.");
+                if (!actualizado)
+                {
+                    return NotFound(new
+                    {
+                        mensaje = $"No se encontró el horario {id}"
+                    });
+                }
+
+                return Ok(new
+                {
+                    mensaje = $"Horario {id} actualizado correctamente"
+                });
             }
             catch (InvalidOperationException ex)
             {
-                return Conflict(new { mensaje = ex.Message });
+                return Conflict(new
+                {
+                    mensaje = ex.Message
+                });
             }
         }
 
@@ -70,11 +87,19 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult> Delete(int id)
         {
             var ok = await repositorio.DeleteHorario(id);
+
             if (!ok)
             {
-                return Conflict($"No se puede eliminar el horario {id}: está asignado a uno o más eventos.");
+                return Conflict(new
+                {
+                    mensaje = $"No se puede eliminar el horario {id} porque está asignado a eventos"
+                });
             }
-            return Ok("Horario eliminado correctamente.");
+
+            return Ok(new
+            {
+                mensaje = "Horario eliminado correctamente"
+            });
         }
     }
 }

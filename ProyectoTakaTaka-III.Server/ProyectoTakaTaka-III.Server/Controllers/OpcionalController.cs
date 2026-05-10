@@ -28,7 +28,10 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult<ListadoOpcionalDTO>> Get(int id)
         {
             var opcional = await repositorio.SelectOpcionalById(id);
-            if (opcional == null) return NotFound();
+
+            if (opcional == null)
+                return NotFound(new { mensaje = $"No se encontró el opcional {id}" });
+
             return Ok(opcional);
         }
 
@@ -36,21 +39,33 @@ namespace ProyectoTakaTaka_III.Server.Controllers
         public async Task<ActionResult> Post(CrearOpcionalDTO dto)
         {
             await repositorio.InsertOpcional(dto);
-            return Ok("Opcional creado correctamente");
+
+            return Ok(new
+            {
+                mensaje = "Opcional creado correctamente"
+            });
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, CrearOpcionalDTO dto)
         {
             await repositorio.UpdateOpcional(id, dto);
-            return Ok("Opcional actualizado correctamente");
+
+            return Ok(new
+            {
+                mensaje = "Opcional actualizado correctamente"
+            });
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             await repositorio.DeleteOpcional(id);
-            return Ok("Opcional eliminado correctamente");
+
+            return Ok(new
+            {
+                mensaje = "Opcional eliminado correctamente"
+            });
         }
     }
 }
