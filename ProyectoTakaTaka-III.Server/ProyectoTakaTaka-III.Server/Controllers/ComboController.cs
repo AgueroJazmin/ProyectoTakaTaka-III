@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProyectoTakaTaka_III.Repositorio.Repositorios;
-using ProyectoTakaTaka_III.Shared.DTO;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoTakaTaka_III.BD.Datos.Entity;
+using ProyectoTakaTaka_III.Repositorio.Repositorios;
+using ProyectoTakaTaka_III.Shared.DTO;
 
 namespace ProyectoTakaTaka_III.Server.Controllers
 {
@@ -35,6 +36,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             return Ok(combo);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<ActionResult> Post(CrearComboDTO dto)
         {
@@ -46,6 +48,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, CrearComboDTO dto)
         {
@@ -57,6 +60,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             });
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

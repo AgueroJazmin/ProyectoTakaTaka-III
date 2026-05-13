@@ -1,24 +1,22 @@
 ﻿/* ========================================
-   TAKA TAKA - Sistema de Gestión de Eventos
-   Paleta: Rosa y Celeste
+   TAKA TAKA - SISTEMA DE EVENTOS
+   CSS FINAL CORREGIDO
    ======================================== */
 
 :root {
     --rosa-fuerte: #FF1493;
     --rosa-medio: #FF69B4;
     --rosa-claro: #FFB6C1;
-    --rosa-pastel: #FFC0CB;
     --celeste-fuerte: #00CED1;
     --celeste-medio: #48D1CC;
     --celeste-claro: #87CEEB;
-    --celeste-pastel: #B0E0E6;
     --gradient-principal: linear-gradient(135deg, #FF1493 0%, #FF69B4 50%, #00CED1 100%);
-    --gradient-suave: linear-gradient(135deg, #FFB6C1 0%, #B0E0E6 100%);
-    --gradient-inverso: linear-gradient(135deg, #00CED1 0%, #48D1CC 50%, #FF1493 100%);
+    --gradient-celeste: linear-gradient(135deg, #00CED1 0%, #48D1CC 100%);
+    --gradient-danger: linear-gradient(135deg, #ff4d6d 0%, #e63946 100%);
+    --gradient-warning: linear-gradient(135deg, #fbbc04 0%, #f59f00 100%);
     --shadow-sm: 0 2px 8px rgba(255, 20, 147, 0.15);
-    --shadow-md: 0 4px 16px rgba(255, 20, 147, 0.2);
+    --shadow-md: 0 4px 16px rgba(255, 20, 147, 0.20);
     --shadow-lg: 0 8px 24px rgba(255, 20, 147, 0.25);
-    --shadow-celeste: 0 4px 16px rgba(0, 206, 209, 0.2);
 }
 
 /* ========================================
@@ -26,9 +24,11 @@
    ======================================== */
 
 body {
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     background: linear-gradient(to bottom right, #FFF5F7 0%, #E0F7FA 100%);
     min-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
 
 /* ========================================
@@ -43,36 +43,29 @@ body {
 
     .top-row a {
         color: white !important;
-        font-weight: 600;
         text-decoration: none;
-        padding: 8px 16px;
+        font-weight: 600;
         border-radius: 20px;
-        transition: all 0.3s ease;
+        padding: 8px 16px;
+        transition: 0.25s ease;
     }
 
         .top-row a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
+            background: rgba(255,255,255,0.18);
         }
 
 /* ========================================
    SIDEBAR
    ======================================== */
 
-.sidebar {
-    background: linear-gradient(180deg, #2C3E50 0%, #1a252f 100%);
-    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-    min-height: 100vh;
-}
-
+.sidebar,
 .nav-scrollable {
-    background: linear-gradient(180deg, #2C3E50 0%, #1a252f 100%);
+    background: linear-gradient(180deg, #2C3E50 0%, #1A252F 100%);
     min-height: 100vh;
-    padding-bottom: 2rem;
 }
 
 /* ========================================
-   MENÚ
+   ITEMS MENU
    ======================================== */
 
 .nav-item {
@@ -84,83 +77,50 @@ body {
     border-radius: 12px;
     padding: 14px 18px !important;
     font-weight: 500;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 10px;
-    position: relative;
-    overflow: hidden;
+    transition: 0.25s ease;
 }
 
     .nav-link:hover {
         background: var(--gradient-principal);
         color: white !important;
-        transform: translateX(5px);
-        box-shadow: var(--shadow-md);
+        transform: translateX(4px);
     }
 
     .nav-link.active {
         background: var(--gradient-principal);
         color: white !important;
         font-weight: 700;
-        box-shadow: var(--shadow-md);
-    }
-
-    .nav-link::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 4px;
-        background: var(--gradient-principal);
-        transform: scaleY(0);
-        transition: transform 0.3s ease;
-    }
-
-    .nav-link:hover::before,
-    .nav-link.active::before {
-        transform: scaleY(1);
     }
 
 .nav-icon {
-    font-size: 1.3rem;
-    min-width: 24px;
-    text-align: center;
+    font-size: 1.2rem;
 }
 
 .nav-text {
     font-size: 0.95rem;
 }
 
-.nav-divider {
-    height: 1px;
-    background: linear-gradient( 90deg, transparent 0%, rgba(255,20,147,0.3) 50%, transparent 100% );
-    margin: 1rem 1.5rem;
-}
-
 /* ========================================
-   TITULOS DEL MENU
+   TITULOS MENU
    ======================================== */
 
 .nav-section-title {
-    color: #ffffff;
-    font-size: 0.82rem;
+    display: block;
+    width: calc(100% - 20px);
+    margin: 14px 10px 8px;
+    padding: 12px 18px;
+    color: white;
+    font-size: 0.95rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 2px;
-    padding: 1rem 1.2rem 0.7rem;
-    margin: 1rem 0.8rem 0.5rem;
-    background: rgba(255,255,255,0.08);
-    border-left: 4px solid var(--rosa-fuerte);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    text-shadow: 0 0 6px rgba(255,255,255,0.25);
+    background: var(--gradient-principal);
+    border-radius: 12px;
+    box-sizing: border-box;
 }
-
-    .nav-section-title::after {
-        display: none;
-    }
 
 /* ========================================
    TITULOS
@@ -177,82 +137,110 @@ h6 {
 
 h3 {
     color: var(--rosa-fuerte);
-    margin-bottom: 2rem;
-    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 8px;
     border-bottom: 4px solid var(--celeste-fuerte);
     display: inline-block;
-    position: relative;
 }
 
-    h3::after {
-        content: '';
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 50%;
-        height: 4px;
-        background: var(--gradient-principal);
-        border-radius: 2px;
-    }
-
 /* ========================================
-   BOTONES
+   BOTONES GENERALES
    ======================================== */
 
 .btn {
-    border-radius: 25px;
-    padding: 10px 28px;
-    font-weight: 600;
-    border: none;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    transition: 0.25s ease !important;
+    cursor: pointer !important;
 }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+/* ========================================
+   BOTONES BOOTSTRAP
+   ======================================== */
 
 .btn-primary {
     background: var(--gradient-principal) !important;
     color: white !important;
-    box-shadow: var(--shadow-sm);
 }
 
     .btn-primary:hover {
-        transform: translateY(-3px);
         box-shadow: var(--shadow-lg);
     }
 
-    .btn-primary::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient( 90deg, transparent, rgba(255,255,255,0.3), transparent );
-        transition: left 0.5s;
-    }
-
-    .btn-primary:hover::before {
-        left: 100%;
-    }
-
 .btn-secondary {
-    background: var(--gradient-suave) !important;
+    background: #DADADA !important;
     color: #2C3E50 !important;
 }
 
+.btn-warning {
+    background: var(--gradient-warning) !important;
+    color: white !important;
+}
+
 .btn-danger {
-    background: linear-gradient(135deg, #FF416C 0%, #FF1493 100%) !important;
+    background: var(--gradient-danger) !important;
     color: white !important;
 }
 
 .btn-info {
-    background: var(--gradient-inverso) !important;
+    background: var(--gradient-celeste) !important;
     color: white !important;
 }
 
-.btn-sm {
-    padding: 6px 18px;
-    font-size: 0.9rem;
+/* ========================================
+   BOTONES ICONOS
+   ======================================== */
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* ESTA ES LA CLASE QUE USAS EN LOS BOTONES */
+
+.btn-icono {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.25s ease;
+    font-size: 1rem;
+    color: white;
+    padding: 0;
+    line-height: 1;
+}
+
+    .btn-icono:hover {
+        transform: scale(1.08);
+    }
+
+/* BOTON VER */
+
+.btn-ver {
+    background: var(--gradient-celeste);
+}
+
+/* BOTON EDITAR */
+
+.btn-editar {
+    background: var(--gradient-warning);
+}
+
+/* BOTON ELIMINAR */
+
+.btn-eliminar {
+    background: var(--gradient-danger);
 }
 
 /* ========================================
@@ -276,10 +264,12 @@ h3 {
             border: none;
             padding: 18px 15px;
             font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 1px;
         }
+
+    .table tbody td {
+        padding: 16px 15px;
+        vertical-align: middle;
+    }
 
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(255,182,193,0.08);
@@ -290,23 +280,11 @@ h3 {
 }
 
 .table tbody tr {
-    transition: all 0.3s ease;
+    transition: 0.25s ease;
 }
 
     .table tbody tr:hover {
-        background: linear-gradient( 90deg, rgba(255,20,147,0.12) 0%, rgba(0,206,209,0.12) 100% );
-        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-    }
-
-.table tbody td {
-    padding: 16px 15px;
-    vertical-align: middle;
-    border-top: 1px solid rgba(0,0,0,0.05);
-}
-
-    .table tbody td:first-child {
-        font-weight: 600;
-        color: #2C3E50;
+        background: rgba(255,20,147,0.08);
     }
 
 /* ========================================
@@ -315,18 +293,18 @@ h3 {
 
 .form-control,
 .form-select {
-    border-radius: 12px;
-    border: 2px solid #E8E8E8;
-    padding: 12px 18px;
-    transition: all 0.3s ease;
+    border-radius: 12px !important;
+    border: 2px solid #E8E8E8 !important;
+    padding: 12px 18px !important;
+    transition: 0.25s ease;
     background: white;
 }
 
     .form-control:focus,
     .form-select:focus {
-        border-color: var(--celeste-fuerte);
-        box-shadow: 0 0 0 0.25rem rgba(0,206,209,0.15);
-        outline: none;
+        border-color: var(--celeste-fuerte) !important;
+        box-shadow: 0 0 0 0.2rem rgba(0,206,209,0.15) !important;
+        outline: none !important;
     }
 
 label {
@@ -335,7 +313,7 @@ label {
 }
 
 /* ========================================
-   FIELDSETS
+   FIELDSET
    ======================================== */
 
 fieldset {
@@ -347,37 +325,46 @@ fieldset {
     margin-bottom: 1.5rem;
 }
 
-    fieldset legend {
-        background: var(--gradient-principal);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 25px;
-        font-weight: 700;
-    }
-
 /* ========================================
    MENSAJES
    ======================================== */
 
 .text-danger {
-    background: linear-gradient(135deg, #FFE6E6 0%, #FFEEF0 100%);
-    padding: 12px 20px;
+    background: #FFE6E6;
+    padding: 12px 18px;
     border-radius: 12px;
     border-left: 5px solid #FF1493;
-    color: #C41E3A;
-    font-weight: 600;
+    color: #C41E3A !important;
     display: inline-block;
 }
 
 .text-exito {
-    background: linear-gradient(135deg, #E6FFE6 0%, #E0F7FA 100%);
-    padding: 12px 20px;
+    background: #E6FFF7;
+    padding: 12px 18px;
     border-radius: 12px;
     border-left: 5px solid #00CED1;
     color: #00796B;
-    font-weight: 600;
     display: inline-block;
 }
+
+/* ========================================
+   DETALLE EVENTO
+   ======================================== */
+
+.detalle-row td {
+    background: linear-gradient( 135deg, rgba(255,182,193,0.08), rgba(176,224,230,0.08) );
+}
+
+.evento-detalle {
+    background: white;
+    border-radius: 14px;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+    .evento-detalle p {
+        margin-bottom: 0.6rem;
+    }
 
 /* ========================================
    CAROUSEL
@@ -395,20 +382,6 @@ fieldset {
     object-fit: cover;
 }
 
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    background-color: var(--rosa-fuerte);
-    border-radius: 50%;
-    padding: 20px;
-}
-
-.carousel-indicators button {
-    background-color: var(--rosa-fuerte);
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
 /* ========================================
    ANIMACIONES
    ======================================== */
@@ -416,7 +389,7 @@ fieldset {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
 
     to {
@@ -426,227 +399,8 @@ fieldset {
 }
 
 .content {
-    animation: fadeIn 0.6s ease-out;
+    animation: fadeIn 0.5s ease;
 }
-
-@keyframes bounce {
-    0%,100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
-
-@keyframes rotate {
-    0%,100% {
-        transform: rotate(0deg);
-    }
-
-    25% {
-        transform: rotate(-10deg);
-    }
-
-    75% {
-        transform: rotate(10deg);
-    }
-}
-
-.brand-icon {
-    font-size: 1.8rem;
-    animation: rotate 3s ease-in-out infinite;
-}
-
-/* ========================================
-   HOME
-   ======================================== */
-
-.home-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.carousel-container {
-    margin: 0 auto;
-    max-width: 900px;
-}
-
-.bg-gradient-caption {
-    background: linear-gradient( 135deg, rgba(255,20,147,0.9) 0%, rgba(0,206,209,0.9) 100% );
-}
-
-.info-card {
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-}
-
-    .info-card:hover {
-        transform: translateY(-10px);
-        border-color: var(--rosa-fuerte);
-        box-shadow: 0 8px 24px rgba(255,20,147,0.2);
-    }
-
-.quick-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: all 0.3s ease;
-}
-
-    .quick-link:hover {
-        transform: scale(1.05);
-    }
-
-.quick-link-content {
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-/* ========================================
-   CARDS COMBOS
-   ======================================== */
-
-.combo-card {
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: all 0.4s ease;
-    border: 2px solid transparent;
-    position: relative;
-}
-
-    .combo-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: var(--gradient-principal);
-    }
-
-    .combo-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 12px 28px rgba(255,20,147,0.25);
-        border-color: var(--rosa-fuerte);
-    }
-
-.combo-card-icon {
-    background: linear-gradient(135deg, #FFB6C1 0%, #B0E0E6 100%);
-    padding: 2rem;
-    text-align: center;
-}
-
-.combo-card-body {
-    padding: 1.5rem;
-}
-
-.combo-card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #2C3E50;
-}
-
-.combo-card-divider {
-    height: 2px;
-    background: var(--gradient-principal);
-    margin: 1rem 0;
-    border-radius: 2px;
-}
-
-.combo-card-price .price-amount {
-    font-size: 1.75rem;
-    font-weight: 800;
-    background: var(--gradient-principal);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.combo-card-footer {
-    background: linear-gradient( 135deg, rgba(255,20,147,0.05) 0%, rgba(0,206,209,0.05) 100% );
-    padding: 1rem;
-    text-align: center;
-}
-
-/* ========================================
-   OPCIONALES
-   ======================================== */
-
-.opcional-card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
-}
-
-    .opcional-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 20px rgba(0,206,209,0.2);
-    }
-
-.opcional-card-icon {
-    background: linear-gradient(135deg, #B0E0E6 0%, #FFB6C1 100%);
-    padding: 1.5rem;
-    text-align: center;
-}
-
-.opcional-card-body {
-    padding: 1.25rem;
-    text-align: center;
-}
-
-/* ========================================
-   BOTONES EVENTOS
-   ======================================== */
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.eye-btn,
-.delete-btn {
-    width: 42px !important;
-    height: 42px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    padding: 0 !important;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-    .eye-btn:hover,
-    .delete-btn:hover {
-        transform: scale(1.08);
-    }
-
-/* ========================================
-   DETALLE EVENTO
-   ======================================== */
-
-.detalle-row td {
-    background: linear-gradient( 135deg, rgba(255,182,193,0.08), rgba(176,224,230,0.08) );
-}
-
-.evento-detalle {
-    padding: 1rem;
-    border-radius: 14px;
-    background: white;
-    box-shadow: var(--shadow-sm);
-}
-
-    .evento-detalle p {
-        margin-bottom: 0.6rem;
-    }
 
 /* ========================================
    SCROLLBAR
@@ -657,7 +411,7 @@ fieldset {
 }
 
 ::-webkit-scrollbar-track {
-    background: #F0F0F0;
+    background: #F5F5F5;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -676,12 +430,11 @@ fieldset {
     }
 
     .btn {
-        padding: 8px 18px;
-        font-size: 0.9rem;
+        font-size: 0.9rem !important;
     }
 
     h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
 
     .carousel-img,
@@ -689,51 +442,8 @@ fieldset {
         height: 300px;
     }
 
-    .navbar-toggler {
-        display: block;
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1001;
-    }
-
-    .nav-scrollable {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        width: 80%;
-        max-width: 300px;
-        height: 100vh;
-        transition: left 0.3s ease;
-        z-index: 1000;
-    }
-
-    .navbar-toggler:checked ~ .nav-scrollable {
-        left: 0;
+    .btn-icono {
+        width: 38px;
+        height: 38px;
     }
 }
-/* ========================================
-   FIX TITULOS GESTION / HERRAMIENTAS
-   ======================================== */
-
-.nav-section-title {
-    display: block !important;
-    width: 100% !important;
-    color: #ffffff !important;
-    opacity: 1 !important;
-    font-size: 1rem !important;
-    font-weight: 800 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 2px !important;
-    padding: 12px 18px !important;
-    margin-top: 14px !important;
-    margin-bottom: 8px !important;
-    background: linear-gradient(135deg, #FF1493 0%, #00CED1 100%) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-    border-left: none !important;
-}
-
-    .nav-section-title::after {
-        display: none !important;
-    }

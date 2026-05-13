@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoTakaTaka_III.BD.Datos.Entity;
 using ProyectoTakaTaka_III.Repositorio.Repositorios;

@@ -53,6 +53,46 @@ namespace ProyectoTakaTaka_III.Servicio.ServicioHttp
 
         }
 
+        public async Task<HttpRespuesta<object>> Put<T>(string url, T entidad)
+        {
+            var enviarJson = JsonSerializer.Serialize(entidad);
+
+            var enviarContent = new StringContent(enviarJson,
+                                Encoding.UTF8,
+                                "application/json");
+
+            var response = await http.PutAsync(url, enviarContent);
+            if (response.IsSuccessStatusCode)
+            {
+                //var respuesta = await DesSerializar<object>(response);
+                return new HttpRespuesta<object>(null, false, response);
+            }
+            else
+            {
+                return new HttpRespuesta<object>(default, true, response);
+            }
+        }
+
+        //Este metodo es para cuando el Put devuelve un objeto, no solo un status
+        public async Task<HttpRespuesta<TResp>> Put<T, TResp>(string url, T entidad)
+        {
+            var enviarJson = JsonSerializer.Serialize(entidad);
+            var enviarContent = new StringContent(enviarJson,
+                                Encoding.UTF8,
+                                "application/json");
+
+            var response = await http.PutAsync(url, enviarContent);
+            if (response.IsSuccessStatusCode)
+            {
+                var respuesta = await DesSerializar<TResp>(response);
+                return new HttpRespuesta<TResp>(respuesta, false, response);
+            }
+            else
+            {
+                return new HttpRespuesta<TResp>(default, true, response);
+            }
+        }
+
         public async Task<HttpRespuesta<object>> Delete(string url)
         {
             var respuesta = await http.DeleteAsync(url);
@@ -79,5 +119,7 @@ namespace ProyectoTakaTaka_III.Servicio.ServicioHttp
             };
             return JsonSerializer.Deserialize<T>(respStr, options);
         }
+
+        //Me falta el obtener mensaje error que esta en el otro programa
     }
 }

@@ -35,6 +35,16 @@ builder.Services.AddRazorComponents()
     .AddAuthenticationStateSerialization();
 
 builder.Services.AddCascadingAuthenticationState();
+//Aca debajo de agrego un AddAuthorization para poder hacer el admin para que solo el admin pueda acceder a ciertas paginas
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+       policy.RequireAssertion(context =>
+           context.User.Identity != null &&
+           context.User.Identity.IsAuthenticated &&
+           context.User.Identity.Name == "admintktk@gmail.com"));
+});
+
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 

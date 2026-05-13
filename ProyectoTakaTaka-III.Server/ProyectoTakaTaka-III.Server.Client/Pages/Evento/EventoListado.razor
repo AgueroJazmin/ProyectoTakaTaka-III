@@ -2,10 +2,12 @@
 @rendermode InteractiveAuto
 @attribute [Authorize]
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @using ProyectoTakaTaka_III.Servicio.ServicioHttp
 @using ProyectoTakaTaka_III.Shared.DTO
 @inject IHttpServicio http
 @inject NavigationManager navHttp
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 
 <h3>Listado de Eventos</h3>
@@ -54,19 +56,23 @@ else
 
                             <!-- BOTÓN VER -->
                             <button type="button"
-                                    class="btn btn-info btn-sm"
+                                    class="btn-icono btn-ver"
+                                    title="Ver detalle"
                                     @onclick="() => ToggleDetalle(ev.Id)">
 
-                                👁
+                                👁️
                             </button>
 
                             <!-- BOTÓN ELIMINAR -->
-                            <button type="button"
-                                    class="btn btn-danger btn-sm"
-                                    @onclick="() => Borrar(ev)">
-
-                                🗑
-                            </button>
+                            @if (esAdmin)
+                            {
+                                <button type="button"
+                                        class="btn-icono btn-eliminar"
+                                        title="Eliminar"
+                                        @onclick="() => Borrar(ev)">
+                                    🗑️
+                                </button>
+                            }
 
                         </div>
                     </td>
@@ -104,9 +110,16 @@ else
     List<ListadoEventoDTO>? eventos;
     string Mensaje = "";
     int? eventoExpandido = null; 
+    bool esAdmin = false;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        var usuario = authState.User;
+
+        esAdmin = usuario.Identity?.Name == "admintktk@gmail.com";
+
         await LeerEventos();
     }
 

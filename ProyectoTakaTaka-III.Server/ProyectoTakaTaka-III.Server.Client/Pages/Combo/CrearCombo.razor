@@ -1,0 +1,272 @@
+﻿@page "/crear/combos"
+@using Microsoft.AspNetCore.Authorization
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+
+@rendermode InteractiveAuto
+@attribute [Authorize(Policy = "AdminOnly")]
+
+@inject IHttpServicio http
+@inject NavigationManager navHttp
+
+<h3>Administrar Combos</h3>
+
+<br />
+
+<EditForm Model="modelo"
+          OnValidSubmit="Guardar"
+          FormName="FormCombos">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <fieldset class="border p-3">
+
+        <div class="mb-3">
+            <label>Nombre del Combo</label>
+
+            <InputText class="form-control"
+                       @bind-Value="modelo.NomCombo" />
+        </div>
+
+        <div class="mb-3">
+            <label>Precio</label>
+
+            <InputNumber class="form-control"
+                         @bind-Value="modelo.Precio" />
+        </div>
+
+        <br />
+
+        @if (editando)
+        {
+            <button type="submit" class="btn btn-warning">
+                Modificar Combo
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary ms-2"
+                    @onclick="CancelarEdicion">
+                Cancelar
+            </button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">
+                Guardar Combo
+            </button>
+        }
+
+    </fieldset>
+
+</EditForm>
+
+<br />
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    <p class="@(error ? "text-danger" : "text-exito")">
+        @Mensaje
+    </p>
+}
+
+<hr />
+
+<h4>Listado de Combos</h4>
+
+@if (combos == null)
+{
+    <p>Cargando combos...</p>
+}
+else if (combos.Count == 0)
+{
+    <p>No hay combos cargados.</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th style="width:200px;">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var combo in combos)
+            {
+                <tr>
+
+                    <td>@combo.NomCombo</td>
+
+                    <td>
+                        @combo.Precio.ToString("C",
+                                 new System.Globalization.CultureInfo("es-AR"))
+                    </td>
+
+                    <td class="text-center">
+
+                        <button type="button"
+                                class="btn-icono btn-editar me-2"
+                                title="Editar"
+                                @onclick="() => Editar(combo)">
+
+                            ✏️
+                        </button>
+
+                        <button type="button"
+                                class="btn-icono btn-eliminar"
+                                title="Eliminar"
+                                @onclick="() => Eliminar(combo.Id)">
+
+                            🗑️
+                        </button>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+@code {
+
+    private CrearComboDTO modelo = new();
+
+    private List<ListadoComboDTO> combos = new();
+
+    private string Mensaje = "";
+
+    private bool error = false;
+
+    private bool editando = false;
+
+    private int idEditando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LeerCombos();
+    }
+
+    private async Task LeerCombos()
+    {
+        var resp =
+            await http.Get<List<ListadoComboDTO>>(
+                "api/Combos/ListadoCombos");
+
+        if (!resp.Error && resp.Respuesta != null)
+        {
+            combos = resp.Respuesta;
+        }
+        else
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+        }
+    }
+
+    private async Task Guardar()
+    {
+        Mensaje = "";
+
+        error = false;
+
+        modelo.NomCombo = modelo.NomCombo.Trim();
+
+        if (editando)
+        {
+            var resp =
+                await http.Put(
+                    $"api/Combos/{idEditando}",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Combo modificado correctamente";
+        }
+        else
+        {
+            var resp =
+                await http.Post<CrearComboDTO, object>(
+                    "api/Combos",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Combo creado correctamente";
+        }
+
+        modelo = new CrearComboDTO();
+
+        editando = false;
+
+        idEditando = 0;
+
+        await LeerCombos();
+    }
+
+    private void Editar(ListadoComboDTO combo)
+    {
+        editando = true;
+
+        idEditando = combo.Id;
+
+        modelo = new CrearComboDTO
+        {
+            NomCombo = combo.NomCombo,
+            Precio = combo.Precio
+        };
+    }
+
+    private async Task Eliminar(int id)
+    {
+        error = false;
+
+        var resp = await http.Delete($"api/Combos/{id}");
+
+        if (resp.Error)
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+
+            return;
+        }
+
+        Mensaje = "Combo eliminado correctamente";
+
+        await LeerCombos();
+    }
+
+    private void CancelarEdicion()
+    {
+        editando = false;
+
+        idEditando = 0;
+
+        modelo = new CrearComboDTO();
+
+        Mensaje = "";
+    }
+}
