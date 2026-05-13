@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProyectoTakaTaka_III.Repositorio.Repositorios;
-using ProyectoTakaTaka_III.Shared.DTO;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoTakaTaka_III.BD.Datos.Entity;
+using ProyectoTakaTaka_III.Repositorio.Repositorios;
+using ProyectoTakaTaka_III.Shared.DTO;
 
 namespace ProyectoTakaTaka_III.Server.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/Horarios")]
     public class HorarioController : ControllerBase

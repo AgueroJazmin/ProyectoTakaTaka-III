@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoTakaTaka_III.BD.Datos;
 using ProyectoTakaTaka_III.BD.Datos.Entity;
@@ -6,6 +7,7 @@ using ProyectoTakaTaka_III.Shared.DTO;
 
 namespace ProyectoTakaTaka_III.Server.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/Mes")]
     public class MesController : ControllerBase

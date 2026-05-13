@@ -45,6 +45,13 @@ namespace ProyectoTakaTaka_III.Repositorio.Repositorios
 
         public async Task InsertOpcional(CrearOpcionalDTO dto)
         {
+            var existe = await context.Opcionales.AnyAsync(o => o.NomOpcional == dto.NomOpcional);
+
+            if (existe)
+            {
+                throw new Exception("Ya existe un opcional con ese nombre");
+            }
+
             var entidad = new Opcional
             {
                 NomOpcional = dto.NomOpcional,
@@ -52,7 +59,16 @@ namespace ProyectoTakaTaka_III.Repositorio.Repositorios
             };
 
             context.Opcionales.Add(entidad);
+
             await context.SaveChangesAsync();
+            /* var entidad = new Opcional
+             {
+                 NomOpcional = dto.NomOpcional,
+                 Precio = dto.Precio
+             };
+
+             context.Opcionales.Add(entidad);
+             await context.SaveChangesAsync();*/
         }
 
         public async Task UpdateOpcional(int id, CrearOpcionalDTO dto)
@@ -68,11 +84,29 @@ namespace ProyectoTakaTaka_III.Repositorio.Repositorios
 
         public async Task DeleteOpcional(int id)
         {
+            var usado = await context.EventosOpcionales.AnyAsync(eo => eo.OpcionalId == id);
+
+            if (usado)
+            {
+                throw new Exception(
+                    "No se puede eliminar el opcional porque está asociado a eventos");
+            }
+
             var entidad = await context.Opcionales.FindAsync(id);
+
+            if (entidad == null)
+            {
+                throw new Exception("Opcional no encontrado");
+            }
+
+            context.Opcionales.Remove(entidad);
+
+            await context.SaveChangesAsync();
+            /*var entidad = await context.Opcionales.FindAsync(id);
             if (entidad == null) return;
 
             context.Opcionales.Remove(entidad);
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync();*/
         }
     }
 }

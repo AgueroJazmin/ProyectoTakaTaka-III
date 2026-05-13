@@ -1,0 +1,345 @@
+﻿@page "/crear/meses"
+@using Microsoft.AspNetCore.Authorization
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+@using ProyectoTakaTaka_III.Shared.ENUM
+
+@rendermode InteractiveAuto
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IHttpServicio http
+@inject NavigationManager navHttp
+
+<h3>Administrar Meses</h3>
+
+<br />
+
+<EditForm Model="modelo"
+          OnValidSubmit="Guardar"
+          FormName="FormMeses">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <fieldset class="border p-3">
+
+        <div class="mb-3">
+
+            <label>Mes</label>
+
+            <InputSelect class="form-select"
+                         @bind-Value="modelo.MesHabilitado">
+
+                <option value="">Seleccione un mes</option>
+
+                <option>Enero</option>
+                <option>Febrero</option>
+                <option>Marzo</option>
+                <option>Abril</option>
+                <option>Mayo</option>
+                <option>Junio</option>
+                <option>Julio</option>
+                <option>Agosto</option>
+                <option>Septiembre</option>
+                <option>Octubre</option>
+                <option>Noviembre</option>
+                <option>Diciembre</option>
+
+            </InputSelect>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>Año</label>
+
+            <InputText class="form-control"
+                       @bind-Value="modelo.Año" />
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>Estado</label>
+
+            <InputSelect class="form-select"
+                         @bind-Value="modelo.EstadoRegistro">
+
+                <option value="1">Activo</option>
+                <option value="2">Inactivo</option>
+
+            </InputSelect>
+
+        </div>
+
+        <br />
+
+        @if (editando)
+        {
+            <button type="submit" class="btn btn-warning">
+                Modificar Mes
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary ms-2"
+                    @onclick="CancelarEdicion">
+
+                Cancelar
+            </button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">
+                Guardar Mes
+            </button>
+        }
+
+    </fieldset>
+
+</EditForm>
+
+<br />
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    <p class="@(error ? "text-danger" : "text-exito")">
+        @Mensaje
+    </p>
+}
+
+<hr />
+
+<h4>Listado de Meses</h4>
+
+@if (meses == null)
+{
+    <p>Cargando meses...</p>
+}
+else if (meses.Count == 0)
+{
+    <p>No hay meses cargados.</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+
+            <tr>
+
+                <th>Mes</th>
+
+                <th>Año</th>
+
+                <th>Estado</th>
+
+                <th style="width:220px;">
+                    Acciones
+                </th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var mes in meses)
+            {
+                <tr class="@(mes.EstadoRegistro == 1 ? "table-success" : "table-danger")">
+
+                    <td>
+                        @mes.MesHabilitado
+                    </td>
+
+                    <td>
+                        @mes.Año
+                    </td>
+
+                    <td>
+
+                        @if (mes.EstadoRegistro == 1)
+                        {
+                            <span class="badge bg-success">
+                                Habilitado
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Inhabilitado
+                            </span>
+                        }
+
+                    </td>
+
+                    <td class="text-center">
+
+                        <button type="button"
+                                class="btn-icono btn-editar me-2"
+                                title="Editar"
+                                @onclick="() => Editar(mes)">
+
+                            ✏️
+                        </button>
+
+                        <button type="button"
+                                class="btn-icono btn-eliminar"
+                                title="Eliminar"
+                                @onclick="() => Eliminar(mes.Id)">
+
+                            🗑️
+                        </button>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+@code {
+
+    private MesCrearDTO modelo = new();
+
+    private List<MesListadoDTO> meses = new();
+
+    private string Mensaje = "";
+
+    private bool error = false;
+
+    private bool editando = false;
+
+    private int idEditando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LeerMeses();
+    }
+
+    private async Task LeerMeses()
+    {
+        var resp =
+            await http.Get<List<MesListadoDTO>>(
+                "api/Mes");
+
+        if (!resp.Error && resp.Respuesta != null)
+        {
+            meses = resp.Respuesta;
+        }
+        else
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+        }
+    }
+
+    private async Task Guardar()
+    {
+        Mensaje = "";
+
+        error = false;
+
+        if (editando)
+        {
+            modelo.Id = idEditando;
+
+            var resp =
+                await http.Put(
+                    $"api/Mes/{idEditando}",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Mes actualizado correctamente";
+        }
+        else
+        {
+            var resp =
+                await http.Post<MesCrearDTO, object>(
+                    "api/Mes",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Mes creado correctamente";
+        }
+
+        modelo = new MesCrearDTO
+        {
+            EstadoRegistro = 1
+        };
+
+        editando = false;
+
+        idEditando = 0;
+
+        await LeerMeses();
+    }
+
+    private void Editar(MesListadoDTO mes)
+    {
+        editando = true;
+
+        idEditando = mes.Id;
+
+        modelo = new MesCrearDTO
+        {
+            Id = mes.Id,
+            MesHabilitado = mes.MesHabilitado,
+            Año = mes.Año,
+            EstadoRegistro = mes.EstadoRegistro
+        };
+    }
+
+    private async Task Eliminar(int id)
+    {
+        error = false;
+
+        var resp = await http.Delete($"api/Mes/{id}");
+
+        if (resp.Error)
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+
+            return;
+        }
+
+        Mensaje = "Mes eliminado correctamente";
+
+        await LeerMeses();
+    }
+
+    private void CancelarEdicion()
+    {
+        editando = false;
+
+        idEditando = 0;
+
+        modelo = new MesCrearDTO
+        {
+            EstadoRegistro = 1
+        };
+
+        Mensaje = "";
+    }
+}

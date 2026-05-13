@@ -8,6 +8,7 @@ using static ProyectoTakaTaka_III.Server.Client.Pages.Evento.EventoCrear;
 
 namespace ProyectoTakaTaka_III.Server.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/Evento")]
     public class EventoController : ControllerBase

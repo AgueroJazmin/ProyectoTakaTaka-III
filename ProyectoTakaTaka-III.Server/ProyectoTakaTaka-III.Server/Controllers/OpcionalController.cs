@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProyectoTakaTaka_III.Repositorio.Repositorios;
-using ProyectoTakaTaka_III.Shared.DTO;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProyectoTakaTaka_III.BD.Datos.Entity;
+using ProyectoTakaTaka_III.Repositorio.Repositorios;
+using ProyectoTakaTaka_III.Shared.DTO;
 
 namespace ProyectoTakaTaka_III.Server.Controllers
 {
@@ -35,6 +36,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             return Ok(opcional);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult> Post(CrearOpcionalDTO dto)
         {
@@ -46,6 +48,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, CrearOpcionalDTO dto)
         {
@@ -57,6 +60,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

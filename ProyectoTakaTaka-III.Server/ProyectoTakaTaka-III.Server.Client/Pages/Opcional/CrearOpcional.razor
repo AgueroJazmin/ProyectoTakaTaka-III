@@ -1,0 +1,276 @@
+﻿@page "/crear/opcionales"
+@using Microsoft.AspNetCore.Authorization
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+
+@rendermode InteractiveAuto
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IHttpServicio http
+@inject NavigationManager navHttp
+
+<h3>Administrar Opcionales</h3>
+
+<br />
+
+<EditForm Model="modelo"
+          OnValidSubmit="Guardar"
+          FormName="FormOpcionales">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <fieldset class="border p-3">
+
+        <div class="mb-3">
+            <label>Nombre del Opcional</label>
+
+            <InputText class="form-control"
+                       @bind-Value="modelo.NomOpcional" />
+        </div>
+
+        <div class="mb-3">
+            <label>Precio</label>
+
+            <InputNumber class="form-control"
+                         @bind-Value="modelo.Precio" />
+        </div>
+
+        <br />
+
+        @if (editando)
+        {
+            <button type="submit" class="btn btn-warning">
+                Modificar Opcional
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary ms-2"
+                    @onclick="CancelarEdicion">
+
+                Cancelar
+            </button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">
+                Guardar Opcional
+            </button>
+        }
+
+    </fieldset>
+
+</EditForm>
+
+<br />
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    <p class="@(error ? "text-danger" : "text-exito")">
+        @Mensaje
+    </p>
+}
+
+<hr />
+
+<h4>Listado de Opcionales</h4>
+
+@if (opcionales == null)
+{
+    <p>Cargando opcionales...</p>
+}
+else if (opcionales.Count == 0)
+{
+    <p>No hay opcionales cargados.</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th style="width:200px;">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @foreach (var opcional in opcionales)
+            {
+                <tr>
+
+                    <td>@opcional.NomOpcional</td>
+
+                    <td>
+                        @opcional.Precio.ToString(
+                                 "C",
+                                 new System.Globalization.CultureInfo("es-AR"))
+                    </td>
+
+                    <td class="text-center">
+
+                        <!-- BOTON EDITAR -->
+                        <button type="button"
+                                class="btn-icono btn-editar me-2"
+                                title="Editar"
+                                @onclick="() => Editar(opcional)">
+
+                            ✏️
+                        </button>
+
+                        <!-- BOTON ELIMINAR -->
+                        <button type="button"
+                                class="btn-icono btn-eliminar"
+                                title="Eliminar"
+                                @onclick="() => Eliminar(opcional.Id)">
+
+                            🗑️
+                        </button>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+@code {
+
+    private CrearOpcionalDTO modelo = new();
+
+    private List<ListadoOpcionalDTO> opcionales = new();
+
+    private string Mensaje = "";
+
+    private bool error = false;
+
+    private bool editando = false;
+
+    private int idEditando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LeerOpcionales();
+    }
+
+    private async Task LeerOpcionales()
+    {
+        var resp =
+            await http.Get<List<ListadoOpcionalDTO>>(
+                "api/Opcionales/ListadoOpcional");
+
+        if (!resp.Error && resp.Respuesta != null)
+        {
+            opcionales = resp.Respuesta;
+        }
+        else
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+        }
+    }
+
+    private async Task Guardar()
+    {
+        Mensaje = "";
+
+        error = false;
+
+        modelo.NomOpcional = modelo.NomOpcional.Trim();
+
+        if (editando)
+        {
+            var resp =
+                await http.Put(
+                    $"api/Opcionales/{idEditando}",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Opcional modificado correctamente";
+        }
+        else
+        {
+            var resp =
+                await http.Post<CrearOpcionalDTO, object>(
+                    "api/Opcionales",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Opcional creado correctamente";
+        }
+
+        modelo = new CrearOpcionalDTO();
+
+        editando = false;
+
+        idEditando = 0;
+
+        await LeerOpcionales();
+    }
+
+    private void Editar(ListadoOpcionalDTO opcional)
+    {
+        editando = true;
+
+        idEditando = opcional.Id;
+
+        modelo = new CrearOpcionalDTO
+        {
+            NomOpcional = opcional.NomOpcional,
+            Precio = opcional.Precio
+        };
+    }
+
+    private async Task Eliminar(int id)
+    {
+        error = false;
+
+        var resp = await http.Delete($"api/Opcionales/{id}");
+
+        if (resp.Error)
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+
+            return;
+        }
+
+        Mensaje = "Opcional eliminado correctamente";
+
+        await LeerOpcionales();
+    }
+
+    private void CancelarEdicion()
+    {
+        editando = false;
+
+        idEditando = 0;
+
+        modelo = new CrearOpcionalDTO();
+
+        Mensaje = "";
+    }
+}

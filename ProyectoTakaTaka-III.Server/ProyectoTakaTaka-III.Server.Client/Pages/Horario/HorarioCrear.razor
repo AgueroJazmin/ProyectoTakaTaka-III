@@ -1,0 +1,374 @@
+﻿@page "/crear/horarios"
+
+@using Microsoft.AspNetCore.Authorization
+@using ProyectoTakaTaka_III.Servicio.ServicioHttp
+@using ProyectoTakaTaka_III.Shared.DTO
+
+@rendermode InteractiveAuto
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IHttpServicio http
+@inject NavigationManager navHttp
+
+<h3>Administrar Horarios</h3>
+
+<br />
+
+<EditForm Model="modelo"
+          OnValidSubmit="Guardar"
+          FormName="FormHorarios">
+
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <fieldset class="border p-3">
+
+        <!-- HORA INICIO -->
+        <div class="mb-3">
+
+            <label>Hora Inicio</label>
+
+            <input type="time"
+                   class="form-control"
+                   value="@modelo.HInicio.ToString("HH:mm")"
+                   @onchange="CambiarHoraInicio" />
+
+        </div>
+
+        <!-- HORA FIN -->
+        <div class="mb-3">
+
+            <label>Hora Fin</label>
+
+            <input type="time"
+                   class="form-control"
+                   value="@modelo.HFin.ToString("HH:mm")"
+                   @onchange="CambiarHoraFin" />
+
+        </div>
+
+        <!-- MEDIA HORA EXTRA -->
+        <div class="form-check mb-3">
+
+            <InputCheckbox class="form-check-input"
+                           @bind-Value="modelo.MediaHoraExtra" />
+
+            <label class="form-check-label">
+                Media Hora Extra
+            </label>
+
+        </div>
+
+        <!-- DISPONIBLE -->
+        <div class="form-check mb-3">
+
+            <InputCheckbox class="form-check-input"
+                           @bind-Value="modelo.Disponible" />
+
+            <label class="form-check-label">
+                Disponible
+            </label>
+
+        </div>
+
+        <br />
+
+        @if (editando)
+        {
+            <button type="submit" class="btn btn-warning">
+                Modificar Horario
+            </button>
+
+            <button type="button"
+                    class="btn btn-secondary ms-2"
+                    @onclick="CancelarEdicion">
+
+                Cancelar
+            </button>
+        }
+        else
+        {
+            <button type="submit" class="btn btn-primary">
+                Guardar Horario
+            </button>
+        }
+
+    </fieldset>
+
+</EditForm>
+
+<br />
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    <p class="@(error ? "text-danger" : "text-exito")">
+        @Mensaje
+    </p>
+}
+
+<hr />
+
+<h4>Listado de Horarios</h4>
+
+@if (horarios == null)
+{
+    <p>Cargando horarios...</p>
+}
+else if (horarios.Count == 0)
+{
+    <p>No hay horarios cargados.</p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+
+            <tr>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Disponible</th>
+                <th style="width:220px;">Acciones</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            @foreach (var horario in horarios)
+            {
+                <tr>
+
+                    <!-- INICIO -->
+                    <td>
+                        @horario.HInicio.ToString("HH:mm")
+                    </td>
+
+                    <!-- FIN -->
+                    <td>
+                        @horario.HFin.ToString("HH:mm")
+                    </td>
+
+                    <!-- DISPONIBLE -->
+                    <td>
+
+                        @if (horario.Disponible)
+                        {
+                            <span class="text-exito">
+                                Disponible
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">
+                                Ocupado
+                            </span>
+                        }
+
+                    </td>
+
+                    <!-- ACCIONES -->
+                    <td class="text-center">
+
+                        <!-- EDITAR -->
+                        <button type="button"
+                                class="btn-icono btn-editar me-2"
+                                title="Editar"
+                                @onclick="() => Editar(horario)">
+
+                            ✏️
+                        </button>
+
+                        <!-- ELIMINAR -->
+                        <button type="button"
+                                class="btn-icono btn-eliminar"
+                                title="Eliminar"
+                                @onclick="() => Eliminar(horario.HorarioId)">
+
+                            🗑️
+                        </button>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+}
+
+@code {
+
+    private HorarioCrearDTO modelo = new()
+    {
+        HInicio = new TimeOnly(15, 0),
+        HFin = new TimeOnly(18, 0),
+        Disponible = true
+    };
+
+    private List<HorarioListadoDTO> horarios = new();
+
+    private string Mensaje = "";
+
+    private bool error = false;
+
+    private bool editando = false;
+
+    private int idEditando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LeerHorarios();
+    }
+
+    private async Task LeerHorarios()
+    {
+        var resp =
+            await http.Get<List<HorarioListadoDTO>>(
+                "api/Horarios/ListadoHorarios");
+
+        if (!resp.Error && resp.Respuesta != null)
+        {
+            horarios = resp.Respuesta;
+        }
+        else
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+        }
+    }
+
+    private async Task Guardar()
+    {
+        Mensaje = "";
+
+        error = false;
+
+        if (modelo.HFin <= modelo.HInicio)
+        {
+            error = true;
+
+            Mensaje = "La hora de fin debe ser mayor a la hora de inicio";
+
+            return;
+        }
+
+        if (editando)
+        {
+            var resp =
+                await http.Put(
+                    $"api/Horarios/{idEditando}",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Horario modificado correctamente";
+        }
+        else
+        {
+            var resp =
+                await http.Post<HorarioCrearDTO, object>(
+                    "api/Horarios",
+                    modelo);
+
+            if (resp.Error)
+            {
+                error = true;
+
+                Mensaje = resp.ObtenerError();
+
+                return;
+            }
+
+            Mensaje = "Horario creado correctamente";
+        }
+
+        modelo = new HorarioCrearDTO
+        {
+            HInicio = new TimeOnly(15, 0),
+            HFin = new TimeOnly(18, 0),
+            Disponible = true
+        };
+
+        editando = false;
+
+        idEditando = 0;
+
+        await LeerHorarios();
+    }
+
+    private void Editar(HorarioListadoDTO horario)
+    {
+        editando = true;
+
+        idEditando = horario.HorarioId;
+
+        modelo = new HorarioCrearDTO
+        {
+            HInicio = horario.HInicio,
+            HFin = horario.HFin,
+            Disponible = horario.Disponible
+        };
+    }
+
+    private async Task Eliminar(int id)
+    {
+        error = false;
+
+        var resp = await http.Delete($"api/Horarios/{id}");
+
+        if (resp.Error)
+        {
+            error = true;
+
+            Mensaje = resp.ObtenerError();
+
+            return;
+        }
+
+        Mensaje = "Horario eliminado correctamente";
+
+        await LeerHorarios();
+    }
+
+    private void CancelarEdicion()
+    {
+        editando = false;
+
+        idEditando = 0;
+
+        modelo = new HorarioCrearDTO
+        {
+            HInicio = new TimeOnly(15, 0),
+            HFin = new TimeOnly(18, 0),
+            Disponible = true
+        };
+
+        Mensaje = "";
+    }
+
+    private void CambiarHoraInicio(ChangeEventArgs e)
+    {
+        if (TimeOnly.TryParse(e.Value?.ToString(), out var hora))
+        {
+            modelo.HInicio = hora;
+        }
+    }
+
+    private void CambiarHoraFin(ChangeEventArgs e)
+    {
+        if (TimeOnly.TryParse(e.Value?.ToString(), out var hora))
+        {
+            modelo.HFin = hora;
+        }
+    }
+}
