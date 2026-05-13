@@ -1,5 +1,7 @@
 ﻿@page "/eventos"
 @rendermode InteractiveAuto
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 @using ProyectoTakaTaka_III.Servicio.ServicioHttp
 @using ProyectoTakaTaka_III.Shared.DTO
 @inject IHttpServicio http
@@ -26,36 +28,70 @@ else
         <thead>
             <tr>
                 <th>Evento</th>
-                <th>Cliente</th>
-                <th>Cumpleañero</th>
-                <th>Edad</th>
-                <th>Combo</th>
-                <th>Fecha</th>
-                <th>Horario</th>
-                <th>Temática</th>
-                <th>Opcionales</th>
                 <th>Pagos</th>
                 <th>Acciones</th>
             </tr>
         </thead>
+
         <tbody>
             @foreach (var ev in eventos)
             {
                 <tr>
-                    <td>@ev.Evento</td>
-                    <td>@ev.Cliente</td>
-                    <td>@ev.Cumpleanero</td>
-                    <td>@ev.Edad</td>
-                    <td>@ev.Combo</td>
-                    <td>@ev.Fecha.ToString("dd/MM/yyyy")</td>
-                    <td>@($"{ev.HInicio} - {ev.HFin}")</td>
-                    <td>@ev.Tematica</td>
-                    <td>@string.Join(", ", ev.Opcionales)</td>
-                    <td>@(ev.Pagos?.Count ?? 0)</td>
                     <td>
-                        <button class="btn btn-danger btn-sm" @onclick="() => Borrar(ev)">Eliminar</button>
+                        <strong>@ev.Evento</strong>
+                        <br />
+                        <small class="text-muted">
+                            @ev.Fecha.ToString("dd/MM/yyyy")
+                        </small>
+                    </td>
+
+                    <td>
+                        @(ev.Pagos?.Count ?? 0)
+                    </td>
+
+                    <td>
+                        <div class="action-buttons">
+
+                            <!-- BOTÓN VER -->
+                            <button type="button"
+                                    class="btn btn-info btn-sm"
+                                    @onclick="() => ToggleDetalle(ev.Id)">
+
+                                👁
+                            </button>
+
+                            <!-- BOTÓN ELIMINAR -->
+                            <button type="button"
+                                    class="btn btn-danger btn-sm"
+                                    @onclick="() => Borrar(ev)">
+
+                                🗑
+                            </button>
+
+                        </div>
                     </td>
                 </tr>
+
+                @if (eventoExpandido == ev.Id)
+                {
+                    <tr class="detalle-row">
+                        <td colspan="3">
+
+                            <div class="evento-detalle">
+
+                                <p><b>Cliente:</b> @ev.Cliente</p>
+                                <p><b>Cumpleañero:</b> @ev.Cumpleanero</p>
+                                <p><b>Edad:</b> @ev.Edad</p>
+                                <p><b>Combo:</b> @ev.Combo</p>
+                                <p><b>Horario:</b> @($"{ev.HInicio} - {ev.HFin}")</p>
+                                <p><b>Temática:</b> @ev.Tematica</p>
+                                <p><b>Opcionales:</b> @string.Join(", ", ev.Opcionales)</p>
+
+                            </div>
+
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -67,6 +103,7 @@ else
 @code {
     List<ListadoEventoDTO>? eventos;
     string Mensaje = "";
+    int? eventoExpandido = null; 
 
     protected override async Task OnInitializedAsync()
     {
@@ -84,6 +121,14 @@ else
         {
             Mensaje = resp.ObtenerError();
         }
+    }
+
+    private void ToggleDetalle(int id)
+    {
+        if (eventoExpandido == id)
+            eventoExpandido = null;
+        else
+            eventoExpandido = id;
     }
 
     private async Task Borrar(ListadoEventoDTO ev)

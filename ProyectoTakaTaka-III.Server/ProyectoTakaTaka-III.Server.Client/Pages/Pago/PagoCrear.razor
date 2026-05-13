@@ -1,5 +1,7 @@
 ﻿@page "/pagos/crear"
 @rendermode InteractiveAuto
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 @using ProyectoTakaTaka_III.Servicio.ServicioHttp
 @inject IHttpServicio http
 @inject NavigationManager navHttp
@@ -24,7 +26,14 @@
     <InputNumber class="form-control" @bind-Value="pago.Monto" />
 
     <label>Método</label>
-    <InputText class="form-control" @bind-Value="pago.Metodo" />
+    <select class="form-select" @bind="pago.Metodo">
+        <option value="">Seleccione...</option>
+        <option>Efectivo</option>
+        <option>Débito</option>
+        <option>Transferencia</option>
+        <option>QR con recargo en Mercado Pago</option>
+        <option>Crédito</option>
+    </select>
 
     <label>Estado de Pago</label>
     <select class="form-select" @bind="pago.EstadoPago">

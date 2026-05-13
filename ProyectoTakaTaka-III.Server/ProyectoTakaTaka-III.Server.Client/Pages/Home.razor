@@ -10,14 +10,20 @@
         <p class="lead fs-4 text-secondary mb-4">
             Salón de fiestas infantiles y teens
         </p>
-        <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
-            <a href="/eventos/crear" class="btn btn-primary btn-lg shadow-lg">
-                🎉 Reservar Evento
-            </a>
-            <a href="/eventos" class="btn btn-secondary btn-lg shadow-lg">
-                📋 Ver Eventos
-            </a>
-        </div>
+
+        <AuthorizeView> 
+            <Authorized>
+                <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
+                    <a href="/eventos/crear" class="btn btn-primary btn-lg shadow-lg">
+                        🎉 Reservar Evento
+                    </a>
+                    <a href="/eventos" class="btn btn-secondary btn-lg shadow-lg">
+                        📋 Ver Eventos
+                    </a>
+                </div>
+            </Authorized>
+        </AuthorizeView> 
+        
     </div>
 
     <!-- Carousel de fotos -->
@@ -68,7 +74,7 @@
                     </div>
                     <h4 class="text-gradient fw-bold">Cumpleaños</h4>
                     <p class="text-muted">
-                        Hacé del cumple de tu hijo/a un día mágico e inolvidable
+                        Hacé del cumple de tu peque un día mágico e inolvidable
                     </p>
                 </div>
             </div>
@@ -103,38 +109,75 @@
             <span class="text-gradient">Accesos Rápidos</span>
         </h3>
         <div class="row g-3">
-            <div class="col-md-3 col-6">
-                <a href="/combos/listados" class="quick-link">
-                    <div class="text-center p-3 rounded-3 bg-light quick-link-content">
-                        <span class="fs-2">📦</span>
-                        <p class="mb-0 mt-2 fw-bold small">Ver Combos</p>
+            <AuthorizeView>
+                <Authorized>
+                    <div class="row g-3 justify-content-center">
+
+                        <div class="col-md-3 col-6">
+                            <a href="/combos/listados" class="quick-link">
+                                <div class="text-center p-3 rounded-3 bg-light quick-link-content">
+                                    <span class="fs-2">📦</span>
+                                    <p class="mb-0 mt-2 fw-bold small">Ver Combos</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <a href="/opcionales/listados" class="quick-link">
+                                <div class="text-center p-3 rounded-3 bg-light quick-link-content">
+                                    <span class="fs-2">⭐</span>
+                                    <p class="mb-0 mt-2 fw-bold small">Opcionales</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <a href="/eventos" class="quick-link">
+                                <div class="text-center p-3 rounded-3 bg-light quick-link-content">
+                                    <span class="fs-2">📅</span>
+                                    <p class="mb-0 mt-2 fw-bold small">Mis Eventos</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <a href="/pagos/crear" class="quick-link">
+                                <div class="text-center p-3 rounded-3 bg-light quick-link-content">
+                                    <span class="fs-2">💳</span>
+                                    <p class="mb-0 mt-2 fw-bold small">Pagos</p>
+                                </div>
+                            </a>
+                        </div>
+
                     </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/opcionales/listados" class="quick-link">
-                    <div class="text-center p-3 rounded-3 bg-light quick-link-content">
-                        <span class="fs-2">⭐</span>
-                        <p class="mb-0 mt-2 fw-bold small">Opcionales</p>
+                </Authorized>
+
+                <NotAuthorized>
+                    <div class="row g-3 justify-content-center">
+
+                        <div class="col-md-3 col-6">
+                            <a href="/combos/listados" class="quick-link">
+                                <div class="text-center p-3 rounded-3 bg-light quick-link-content">
+                                    <span class="fs-2">📦</span>
+                                    <p class="mb-0 mt-2 fw-bold small">Ver Combos</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        <div class="col-md-3 col-6">
+                            <a href="/opcionales/listados" class="quick-link">
+                                <div class="text-center p-3 rounded-3 bg-light quick-link-content">
+                                    <span class="fs-2">⭐</span>
+                                    <p class="mb-0 mt-2 fw-bold small">Opcionales</p>
+                                </div>
+                            </a>
+                        </div>
+
                     </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/eventos" class="quick-link">
-                    <div class="text-center p-3 rounded-3 bg-light quick-link-content">
-                        <span class="fs-2">📅</span>
-                        <p class="mb-0 mt-2 fw-bold small">Mis Eventos</p>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-3 col-6">
-                <a href="/pagos/crear" class="quick-link">
-                    <div class="text-center p-3 rounded-3 bg-light quick-link-content">
-                        <span class="fs-2">💳</span>
-                        <p class="mb-0 mt-2 fw-bold small">Pagos</p>
-                    </div>
-                </a>
-            </div>
+                </NotAuthorized>
+            </AuthorizeView>
+
+            
         </div>
     </div>
 </div>

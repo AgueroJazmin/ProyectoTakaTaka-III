@@ -1,5 +1,7 @@
 ﻿@page "/eventos/crear"
 @rendermode InteractiveAuto
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 @using ProyectoTakaTaka_III.Servicio.ServicioHttp
 @using ProyectoTakaTaka_III.Shared.DTO
 @inject IHttpServicio http 

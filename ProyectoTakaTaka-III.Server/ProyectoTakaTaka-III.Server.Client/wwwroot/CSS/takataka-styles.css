@@ -4,21 +4,17 @@
    ======================================== */
 
 :root {
-    /* Colores principales Rosa */
     --rosa-fuerte: #FF1493;
     --rosa-medio: #FF69B4;
     --rosa-claro: #FFB6C1;
     --rosa-pastel: #FFC0CB;
-    /* Colores principales Celeste */
     --celeste-fuerte: #00CED1;
     --celeste-medio: #48D1CC;
     --celeste-claro: #87CEEB;
     --celeste-pastel: #B0E0E6;
-    /* Gradientes principales */
     --gradient-principal: linear-gradient(135deg, #FF1493 0%, #FF69B4 50%, #00CED1 100%);
     --gradient-suave: linear-gradient(135deg, #FFB6C1 0%, #B0E0E6 100%);
     --gradient-inverso: linear-gradient(135deg, #00CED1 0%, #48D1CC 50%, #FF1493 100%);
-    /* Sombras */
     --shadow-sm: 0 2px 8px rgba(255, 20, 147, 0.15);
     --shadow-md: 0 4px 16px rgba(255, 20, 147, 0.2);
     --shadow-lg: 0 8px 24px rgba(255, 20, 147, 0.25);
@@ -26,7 +22,7 @@
 }
 
 /* ========================================
-   ESTILOS GENERALES
+   GENERALES
    ======================================== */
 
 body {
@@ -55,22 +51,29 @@ body {
     }
 
         .top-row a:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255,255,255,0.2);
             transform: translateY(-2px);
         }
 
 /* ========================================
-   SIDEBAR / MENÚ LATERAL
+   SIDEBAR
    ======================================== */
 
 .sidebar {
     background: linear-gradient(180deg, #2C3E50 0%, #1a252f 100%);
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+    min-height: 100vh;
 }
 
 .nav-scrollable {
-    background: transparent;
+    background: linear-gradient(180deg, #2C3E50 0%, #1a252f 100%);
+    min-height: 100vh;
+    padding-bottom: 2rem;
 }
+
+/* ========================================
+   MENÚ
+   ======================================== */
 
 .nav-item {
     margin: 8px 12px;
@@ -81,10 +84,12 @@ body {
     border-radius: 12px;
     padding: 14px 18px !important;
     font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative;
+    overflow: hidden;
 }
 
     .nav-link:hover {
@@ -101,15 +106,72 @@ body {
         box-shadow: var(--shadow-md);
     }
 
-    .nav-link span {
-        font-size: 1.1rem;
+    .nav-link::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: var(--gradient-principal);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover::before,
+    .nav-link.active::before {
+        transform: scaleY(1);
+    }
+
+.nav-icon {
+    font-size: 1.3rem;
+    min-width: 24px;
+    text-align: center;
+}
+
+.nav-text {
+    font-size: 0.95rem;
+}
+
+.nav-divider {
+    height: 1px;
+    background: linear-gradient( 90deg, transparent 0%, rgba(255,20,147,0.3) 50%, transparent 100% );
+    margin: 1rem 1.5rem;
+}
+
+/* ========================================
+   TITULOS DEL MENU
+   ======================================== */
+
+.nav-section-title {
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 1rem 1.2rem 0.7rem;
+    margin: 1rem 0.8rem 0.5rem;
+    background: rgba(255,255,255,0.08);
+    border-left: 4px solid var(--rosa-fuerte);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    text-shadow: 0 0 6px rgba(255,255,255,0.25);
+}
+
+    .nav-section-title::after {
+        display: none;
     }
 
 /* ========================================
-   TÍTULOS Y ENCABEZADOS
+   TITULOS
    ======================================== */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-weight: 700;
 }
 
@@ -133,13 +195,6 @@ h3 {
         border-radius: 2px;
     }
 
-.text-pink {
-    background: var(--gradient-principal);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
 /* ========================================
    BOTONES
    ======================================== */
@@ -148,9 +203,10 @@ h3 {
     border-radius: 25px;
     padding: 10px 28px;
     font-weight: 600;
-    letter-spacing: 0.5px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
@@ -164,31 +220,30 @@ h3 {
         box-shadow: var(--shadow-lg);
     }
 
-    .btn-primary:active {
-        transform: translateY(-1px);
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(255,255,255,0.3), transparent );
+        transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
     }
 
 .btn-secondary {
     background: var(--gradient-suave) !important;
     color: #2C3E50 !important;
-    font-weight: 700;
 }
-
-    .btn-secondary:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--shadow-celeste);
-    }
 
 .btn-danger {
     background: linear-gradient(135deg, #FF416C 0%, #FF1493 100%) !important;
-    border-radius: 20px;
-    padding: 8px 20px;
+    color: white !important;
 }
-
-    .btn-danger:hover {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(255, 65, 108, 0.4);
-    }
 
 .btn-info {
     background: var(--gradient-inverso) !important;
@@ -227,7 +282,11 @@ h3 {
         }
 
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(255, 182, 193, 0.05);
+    background-color: rgba(255,182,193,0.08);
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: rgba(176,224,230,0.08);
 }
 
 .table tbody tr {
@@ -235,22 +294,27 @@ h3 {
 }
 
     .table tbody tr:hover {
-        background: linear-gradient(90deg, rgba(255, 20, 147, 0.08) 0%, rgba(0, 206, 209, 0.08) 100%);
-        transform: scale(1.01);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: linear-gradient( 90deg, rgba(255,20,147,0.12) 0%, rgba(0,206,209,0.12) 100% );
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
 .table tbody td {
     padding: 16px 15px;
     vertical-align: middle;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
 }
+
+    .table tbody td:first-child {
+        font-weight: 600;
+        color: #2C3E50;
+    }
 
 /* ========================================
    FORMULARIOS
    ======================================== */
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     border-radius: 12px;
     border: 2px solid #E8E8E8;
     padding: 12px 18px;
@@ -258,21 +322,16 @@ h3 {
     background: white;
 }
 
-    .form-control:focus, .form-select:focus {
+    .form-control:focus,
+    .form-select:focus {
         border-color: var(--celeste-fuerte);
-        box-shadow: 0 0 0 0.25rem rgba(0, 206, 209, 0.15);
+        box-shadow: 0 0 0 0.25rem rgba(0,206,209,0.15);
         outline: none;
-    }
-
-    .form-control:hover, .form-select:hover {
-        border-color: var(--rosa-medio);
     }
 
 label {
     font-weight: 600;
     color: #2C3E50;
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
 }
 
 /* ========================================
@@ -281,7 +340,7 @@ label {
 
 fieldset {
     border-radius: 16px !important;
-    border: 2px solid rgba(255, 20, 147, 0.2) !important;
+    border: 2px solid rgba(255,20,147,0.2) !important;
     padding: 24px !important;
     background: white;
     box-shadow: var(--shadow-sm);
@@ -294,27 +353,6 @@ fieldset {
         padding: 10px 24px;
         border-radius: 25px;
         font-weight: 700;
-        font-size: 1rem;
-        width: auto;
-        margin-bottom: 0;
-        box-shadow: var(--shadow-sm);
-    }
-
-/* ========================================
-   CHECKBOXES
-   ======================================== */
-
-input[type="checkbox"] {
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    margin-right: 12px;
-    accent-color: var(--rosa-fuerte);
-    border-radius: 5px;
-}
-
-    input[type="checkbox"]:checked {
-        background: var(--gradient-principal);
     }
 
 /* ========================================
@@ -326,10 +364,9 @@ input[type="checkbox"] {
     padding: 12px 20px;
     border-radius: 12px;
     border-left: 5px solid #FF1493;
-    display: inline-block;
     color: #C41E3A;
     font-weight: 600;
-    box-shadow: var(--shadow-sm);
+    display: inline-block;
 }
 
 .text-exito {
@@ -340,23 +377,10 @@ input[type="checkbox"] {
     color: #00796B;
     font-weight: 600;
     display: inline-block;
-    box-shadow: var(--shadow-sm);
 }
 
 /* ========================================
-   CARDS Y CONTENEDORES
-   ======================================== */
-
-.mb-2, .mt-3 {
-    transition: all 0.3s ease;
-}
-
-.border {
-    border: 2px solid rgba(255, 20, 147, 0.15) !important;
-}
-
-/* ========================================
-   CAROUSEL (HOME)
+   CAROUSEL
    ======================================== */
 
 .carousel {
@@ -365,7 +389,8 @@ input[type="checkbox"] {
     box-shadow: var(--shadow-lg);
 }
 
-.carousel-item img {
+.carousel-item img,
+.carousel-img {
     height: 500px;
     object-fit: cover;
 }
@@ -375,6 +400,13 @@ input[type="checkbox"] {
     background-color: var(--rosa-fuerte);
     border-radius: 50%;
     padding: 20px;
+}
+
+.carousel-indicators button {
+    background-color: var(--rosa-fuerte);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
 /* ========================================
@@ -397,140 +429,37 @@ input[type="checkbox"] {
     animation: fadeIn 0.6s ease-out;
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.7;
-        transform: scale(1.02);
-    }
-}
-
-p:contains("Cargando") {
-    animation: pulse 1.5s ease-in-out infinite;
-    color: var(--rosa-fuerte);
-    font-weight: 700;
-}
-
-/* ========================================
-   BADGES Y ETIQUETAS
-   ======================================== */
-
-.badge {
-    background: var(--gradient-principal);
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-weight: 600;
-}
-
-/* ========================================
-   ESTADOS ESPECIALES
-   ======================================== */
-
-.fecha-seleccionada {
-    background: var(--gradient-suave);
-    padding: 10px 20px;
-    border-radius: 12px;
-    display: inline-block;
-    font-weight: 600;
-    color: #2C3E50;
-}
-
-    .fecha-seleccionada b {
-        color: var(--rosa-fuerte);
-    }
-
-/* ========================================
-   RESPONSIVE
-   ======================================== */
-
-@media (max-width: 768px) {
-    .table {
-        font-size: 0.85rem;
-    }
-
-    .btn {
-        padding: 8px 18px;
-        font-size: 0.9rem;
-    }
-
-    h3 {
-        font-size: 1.5rem;
-    }
-
-    .carousel-item img {
-        height: 300px;
-    }
-}
-
-/* ========================================
-   DECORACIONES ESPECIALES
-   ======================================== */
-
-/* Globito decorativo */
-body::after {
-    content: "🎈";
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    font-size: 3rem;
-    opacity: 0.2;
-    z-index: -1;
-    animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
+@keyframes bounce {
+    0%,100% {
         transform: translateY(0);
     }
 
     50% {
-        transform: translateY(-20px);
+        transform: translateY(-10px);
     }
 }
 
-/* Efecto de brillo en hover */
-.btn-primary::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.5s;
-}
-
-.btn-primary:hover::before {
-    left: 100%;
-}
-
-/* ========================================
-   SCROLLBAR PERSONALIZADO
-   ======================================== */
-
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #F0F0F0;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--gradient-principal);
-    border-radius: 10px;
-}
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--gradient-inverso);
+@keyframes rotate {
+    0%,100% {
+        transform: rotate(0deg);
     }
 
+    25% {
+        transform: rotate(-10deg);
+    }
+
+    75% {
+        transform: rotate(10deg);
+    }
+}
+
+.brand-icon {
+    font-size: 1.8rem;
+    animation: rotate 3s ease-in-out infinite;
+}
+
 /* ========================================
-   ESTILOS PARA HOME.RAZOR
+   HOME
    ======================================== */
 
 .home-container {
@@ -538,34 +467,13 @@ body::after {
     margin: 0 auto;
 }
 
-.animate-title {
-    animation: slideDown 0.8s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 .carousel-container {
     margin: 0 auto;
     max-width: 900px;
 }
 
-.carousel-img {
-    height: 500px;
-    object-fit: cover;
-}
-
 .bg-gradient-caption {
-    background: linear-gradient(135deg, rgba(255, 20, 147, 0.9) 0%, rgba(0, 206, 209, 0.9) 100%);
+    background: linear-gradient( 135deg, rgba(255,20,147,0.9) 0%, rgba(0,206,209,0.9) 100% );
 }
 
 .info-card {
@@ -576,22 +484,8 @@ body::after {
     .info-card:hover {
         transform: translateY(-10px);
         border-color: var(--rosa-fuerte);
-        box-shadow: 0 8px 24px rgba(255, 20, 147, 0.2);
+        box-shadow: 0 8px 24px rgba(255,20,147,0.2);
     }
-
-.icon-wrapper {
-    animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
-}
 
 .quick-link {
     text-decoration: none;
@@ -605,36 +499,22 @@ body::after {
     }
 
 .quick-link-content {
-    transition: all 0.3s ease;
-}
-
-.quick-link:hover .quick-link-content {
-    background: linear-gradient(135deg, #FFB6C1 0%, #B0E0E6 100%);
-}
-
-.carousel-indicators button {
-    background-color: var(--rosa-fuerte);
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
-@media (max-width: 768px) {
-    .carousel-img {
-        height: 300px;
-    }
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* ========================================
-   ESTILOS PARA CARDS DE COMBOS
+   CARDS COMBOS
    ======================================== */
 
 .combo-card {
     background: white;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.4s ease;
     border: 2px solid transparent;
     position: relative;
 }
@@ -650,8 +530,8 @@ body::after {
     }
 
     .combo-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 12px 28px rgba(255, 20, 147, 0.25);
+        transform: translateY(-10px);
+        box-shadow: 0 12px 28px rgba(255,20,147,0.25);
         border-color: var(--rosa-fuerte);
     }
 
@@ -661,12 +541,6 @@ body::after {
     text-align: center;
 }
 
-    .combo-card-icon .icon-emoji {
-        font-size: 3.5rem;
-        display: inline-block;
-        animation: float 3s ease-in-out infinite;
-    }
-
 .combo-card-body {
     padding: 1.5rem;
 }
@@ -675,10 +549,6 @@ body::after {
     font-size: 1.25rem;
     font-weight: 700;
     color: #2C3E50;
-    margin-bottom: 1rem;
-    min-height: 3rem;
-    display: flex;
-    align-items: center;
 }
 
 .combo-card-divider {
@@ -688,269 +558,137 @@ body::after {
     border-radius: 2px;
 }
 
-.combo-card-price {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
+.combo-card-price .price-amount {
+    font-size: 1.75rem;
+    font-weight: 800;
+    background: var(--gradient-principal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-    .combo-card-price .price-label {
-        font-size: 0.85rem;
-        color: #666;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 600;
-    }
-
-    .combo-card-price .price-amount {
-        font-size: 1.75rem;
-        font-weight: 800;
-        background: var(--gradient-principal);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
 .combo-card-footer {
-    background: linear-gradient(135deg, rgba(255, 20, 147, 0.05) 0%, rgba(0, 206, 209, 0.05) 100%);
+    background: linear-gradient( 135deg, rgba(255,20,147,0.05) 0%, rgba(0,206,209,0.05) 100% );
     padding: 1rem;
     text-align: center;
 }
 
-.badge-day {
-    display: inline-block;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    background: var(--gradient-principal);
-    color: white;
-}
-
-    .badge-day.viernes {
-        background: linear-gradient(135deg, #FF69B4 0%, #FF1493 100%);
-    }
-
-    .badge-day.findes {
-        background: linear-gradient(135deg, #00CED1 0%, #48D1CC 100%);
-    }
-
 /* ========================================
-   ESTILOS PARA CARDS DE OPCIONALES
+   OPCIONALES
    ======================================== */
 
 .opcional-card {
     background: white;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
-    border: 2px solid transparent;
 }
 
     .opcional-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 8px 20px rgba(0, 206, 209, 0.2);
-        border-color: var(--celeste-fuerte);
+        box-shadow: 0 8px 20px rgba(0,206,209,0.2);
     }
 
 .opcional-card-icon {
     background: linear-gradient(135deg, #B0E0E6 0%, #FFB6C1 100%);
     padding: 1.5rem;
     text-align: center;
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
-
-    .opcional-card-icon .icon-emoji {
-        font-size: 3rem;
-        display: inline-block;
-        animation: bounce 2s ease-in-out infinite;
-    }
 
 .opcional-card-body {
     padding: 1.25rem;
     text-align: center;
 }
 
-.opcional-card-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #2C3E50;
-    margin-bottom: 0.75rem;
-    min-height: 2.5rem;
+/* ========================================
+   BOTONES EVENTOS
+   ======================================== */
+
+.action-buttons {
     display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.eye-btn,
+.delete-btn {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    display: flex !important;
     align-items: center;
     justify-content: center;
+    padding: 0 !important;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.opcional-card-price .price-amount {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: var(--rosa-fuerte);
+    .eye-btn:hover,
+    .delete-btn:hover {
+        transform: scale(1.08);
+    }
+
+/* ========================================
+   DETALLE EVENTO
+   ======================================== */
+
+.detalle-row td {
+    background: linear-gradient( 135deg, rgba(255,182,193,0.08), rgba(176,224,230,0.08) );
 }
 
-/* Animación de flotación */
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0);
+.evento-detalle {
+    padding: 1rem;
+    border-radius: 14px;
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+    .evento-detalle p {
+        margin-bottom: 0.6rem;
     }
 
-    50% {
-        transform: translateY(-10px);
-    }
+/* ========================================
+   SCROLLBAR
+   ======================================== */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F0F0F0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #FF69B4;
+    border-radius: 10px;
 }
 
 /* ========================================
-   ESTILOS PARA TABLAS DE PRECIOS
-   (Combos y Opcionales)
+   RESPONSIVE
    ======================================== */
-
-/* Alternancia de colores suaves en las filas */
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(255, 182, 193, 0.08);
-}
-
-.table-striped tbody tr:nth-of-type(even) {
-    background-color: rgba(176, 224, 230, 0.08);
-}
-
-/* Efecto hover mejorado para tablas de precios */
-.table tbody tr:hover {
-    background: linear-gradient(90deg, rgba(255, 20, 147, 0.12) 0%, rgba(0, 206, 209, 0.12) 100%);
-    transform: scale(1.01);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-}
-
-/* Columna de precio destacada */
-.table tbody td:last-child {
-    font-weight: 700;
-    color: var(--rosa-fuerte);
-    font-size: 1.05rem;
-}
-
-    /* Icono de moneda */
-    .table tbody td:last-child::before {
-        content: '💰 ';
-        font-size: 0.9rem;
-        margin-right: 4px;
-    }
-
-/* Estilo para nombres de productos */
-.table tbody td:first-child {
-    font-weight: 600;
-    color: #2C3E50;
-}
-
-/* Badge para destacar ciertos items (opcional) */
-.table tbody tr:first-child td:first-child::after {
-    content: ' ⭐';
-    font-size: 0.8rem;
-}
-
-/* ========================================
-   ESTILOS PARA NAVMENU.RAZOR
-   ======================================== */
-
-.brand-icon {
-    font-size: 1.8rem;
-    animation: rotate 3s ease-in-out infinite;
-}
-
-@keyframes rotate {
-    0%, 100% {
-        transform: rotate(0deg);
-    }
-
-    25% {
-        transform: rotate(-10deg);
-    }
-
-    75% {
-        transform: rotate(10deg);
-    }
-}
-
-.brand-text {
-    letter-spacing: 1px;
-}
-
-.navbar-toggler {
-    display: none;
-}
-
-.nav-item {
-    margin: 6px 0;
-}
-
-.nav-link {
-    position: relative;
-    overflow: hidden;
-}
-
-    .nav-link::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 100%;
-        width: 4px;
-        background: var(--gradient-principal);
-        transform: scaleY(0);
-        transition: transform 0.3s ease;
-    }
-
-    .nav-link:hover::before {
-        transform: scaleY(1);
-    }
-
-    .nav-link.active::before {
-        transform: scaleY(1);
-    }
-
-.nav-icon {
-    font-size: 1.3rem;
-    min-width: 24px;
-    text-align: center;
-}
-
-.nav-text {
-    font-size: 0.95rem;
-}
-
-.nav-divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 20, 147, 0.3) 50%, transparent 100%);
-    margin: 1rem 1.5rem;
-}
-
-.nav-section-title {
-    color: var(--celeste-fuerte);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding: 0.75rem 1.5rem 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.nav-scrollable::-webkit-scrollbar {
-    width: 6px;
-}
-
-.nav-scrollable::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.2);
-}
-
-.nav-scrollable::-webkit-scrollbar-thumb {
-    background: var(--gradient-principal);
-    border-radius: 3px;
-}
 
 @media (max-width: 768px) {
+
+    .table {
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        padding: 8px 18px;
+        font-size: 0.9rem;
+    }
+
+    h3 {
+        font-size: 1.5rem;
+    }
+
+    .carousel-img,
+    .carousel-item img {
+        height: 300px;
+    }
+
     .navbar-toggler {
         display: block;
         position: absolute;
@@ -973,8 +711,29 @@ body::after {
     .navbar-toggler:checked ~ .nav-scrollable {
         left: 0;
     }
-
-    .brand-text {
-        font-size: 1.2rem;
-    }
 }
+/* ========================================
+   FIX TITULOS GESTION / HERRAMIENTAS
+   ======================================== */
+
+.nav-section-title {
+    display: block !important;
+    width: 100% !important;
+    color: #ffffff !important;
+    opacity: 1 !important;
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    padding: 12px 18px !important;
+    margin-top: 14px !important;
+    margin-bottom: 8px !important;
+    background: linear-gradient(135deg, #FF1493 0%, #00CED1 100%) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    border-left: none !important;
+}
+
+    .nav-section-title::after {
+        display: none !important;
+    }
