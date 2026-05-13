@@ -38,11 +38,19 @@ builder.Services.AddCascadingAuthenticationState();
 //Aca debajo de agrego un AddAuthorization para poder hacer el admin para que solo el admin pueda acceder a ciertas paginas
 builder.Services.AddAuthorization(options =>
 {
+    //Entonces pongo este AddPolicy que se llama AdminOnly,
+    //y le digo que para acceder a esa politica el usuario tiene que tener el rol de Admin
+
+    options.AddPolicy("AdminOnly", policy =>
+       policy.RequireRole("Admin"));
+
+    /* Esto es para hacer el admin con el email, pero no es un rol, es una politica que se fija 
+     * en el email del usuario, si el email es el del admin entonces puede acceder a las paginas restringidas, sino no puede acceder
     options.AddPolicy("AdminOnly", policy =>
        policy.RequireAssertion(context =>
            context.User.Identity != null &&
            context.User.Identity.IsAuthenticated &&
-           context.User.Identity.Name == "admintktk@gmail.com"));
+           context.User.Identity.Name == "admintktk@gmail.com"));*/
 });
 
 builder.Services.AddScoped<IdentityRedirectManager>();
@@ -76,6 +84,8 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
         options.SignIn.RequireConfirmedAccount = true;
         options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
     })
+    //agrego el AddRoles para poder usar roles en la aplicacion, sino no se pueden usar roles y no se puede hacer el admin
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MiDbContext>()
     .AddSignInManager()
     .AddDefaultTokenProviders();
@@ -112,5 +122,33 @@ app.MapRazorComponents<App>()
 app.MapAdditionalIdentityEndpoints();
 
 app.MapControllers();
+
+// Aca hago esto para crear el rol de admin y asignarlo al usuario admin,
+// esto se hace para que el usuario admin pueda acceder a las paginas restringidas solo para admin
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager =
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var userManager =
+        scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    // Se cre el rol del admin 
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+
+    // Busca el usuario por su email
+    var usuario =
+        await userManager.FindByEmailAsync("admintktk@gmail.com");
+
+    // Se asigna el rol de admin al usuario, pero solo si el usuario existe y no tiene el rol de admin asignado
+    if (usuario != null &&
+        !await userManager.IsInRoleAsync(usuario, "Admin"))
+    {
+        await userManager.AddToRoleAsync(usuario, "Admin");
+    }
+}
 
 app.Run();

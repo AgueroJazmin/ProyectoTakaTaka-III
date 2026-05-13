@@ -36,7 +36,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             return Ok(combo);
         }
 
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult> Post(CrearComboDTO dto)
         {
@@ -48,7 +48,7 @@ namespace ProyectoTakaTaka_III.Server.Controllers
             });
         }
 
-        [Authorize(Policy = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> Put(int id, CrearComboDTO dto)
         {
@@ -59,8 +59,9 @@ namespace ProyectoTakaTaka_III.Server.Controllers
                 mensaje = "Combo actualizado correctamente"
             });
         }
-
-        [Authorize(Policy = "AdminOnly")]
+        //Antes tenia esto porque etaba usando el policy pero ahora que estoy usando el rol de admin, no necesito el policy, solo el rol de admin
+        //[Authorize(Policy = "AdminOnly")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {

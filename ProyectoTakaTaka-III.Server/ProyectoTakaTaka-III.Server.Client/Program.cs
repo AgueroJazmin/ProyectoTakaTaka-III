@@ -7,10 +7,13 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.Services.AddAuthorizationCore(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
+       policy.RequireRole("Admin"));
+
+    /*options.AddPolicy("AdminOnly", policy =>
         policy.RequireAssertion(context =>
             context.User.Identity != null &&
             context.User.Identity.IsAuthenticated &&
-            context.User.Identity.Name == "admintktk@gmail.com"));
+            context.User.Identity.Name == "admintktk@gmail.com"));*/
 });
 
 builder.Services.AddCascadingAuthenticationState();

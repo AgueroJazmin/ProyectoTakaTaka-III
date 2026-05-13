@@ -4,7 +4,7 @@
 @using ProyectoTakaTaka_III.Shared.DTO
 
 @rendermode InteractiveAuto
-@attribute [Authorize(Policy = "AdminOnly")]
+@attribute [Authorize(Roles = "Admin")]
 
 @inject IHttpServicio http
 @inject NavigationManager navHttp

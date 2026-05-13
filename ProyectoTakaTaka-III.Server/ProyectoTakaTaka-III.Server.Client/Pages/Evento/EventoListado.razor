@@ -118,7 +118,7 @@ else
 
         var usuario = authState.User;
 
-        esAdmin = usuario.Identity?.Name == "admintktk@gmail.com";
+        esAdmin = usuario.IsInRole("Admin");
 
         await LeerEventos();
     }
